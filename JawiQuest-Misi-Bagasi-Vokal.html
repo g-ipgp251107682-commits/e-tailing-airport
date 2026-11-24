@@ -1,0 +1,4435 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>JawiQuest: Misi Bagasi Vokal — Simulasi Lapangan Terbang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0f2544;
+      --navy-mid: #173663;
+      --navy-light: #234b85;
+      --sky: #38bdf8;
+      --sky-light: #bae6fd;
+      --sky-pale: #e0f2fe;
+      --mustard: #f59e0b;
+      --mustard-bright: #fbbf24;
+      --mustard-dark: #d97706;
+      --emerald: #10b981;
+      --emerald-dark: #047857;
+      --emerald-pale: #d1fae5;
+      --blue-gate: #0284c7;
+      --blue-gate-dark: #0369a1;
+      --slate-blue: #475569;
+      --slate-light: #94a3b8;
+      --white: #ffffff;
+      --off-white: #f8fafc;
+      --danger: #ef4444;
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --font-jawi: 'Noto Naskh Arabic', 'Scheherazade New', 'Traditional Arabic', 'Tahoma', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-ui);
+      background-color: var(--navy);
+      color: var(--navy);
+    }
+
+    /* Main Viewport Container */
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 46%, #cbd5e1 46.5%, #94a3b8 100%);
+    }
+
+    /* ==================== SCREENS ==================== */
+    .screen {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ==================== START SCREEN ==================== */
+    #start-screen {
+      justify-content: space-between;
+      background: linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 52%, #e2e8f0 52.5%, #cbd5e1 100%);
+    }
+
+    .terminal-windows-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .start-header-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(15, 37, 68, 0.94);
+      border-bottom: 4px solid var(--mustard);
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .airport-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: var(--mustard);
+      color: var(--navy);
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+    }
+
+    .start-top-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--font-ui);
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+      color: var(--navy);
+      box-shadow: 0 5px 0 #b45309, 0 8px 18px rgba(0,0,0,0.22);
+      font-size: 1.15rem;
+      padding: 14px 28px;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #fde047 0%, #fbbf24 100%);
+    }
+
+    .btn-secondary {
+      background: var(--navy-mid);
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.25);
+      box-shadow: 0 4px 0 #09172b;
+    }
+
+    .btn-secondary:hover {
+      background: var(--navy-light);
+    }
+
+    .btn-emerald {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: var(--white);
+      box-shadow: 0 4px 0 #065f46;
+    }
+
+    .btn-outline-light {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.35);
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255,255,255,0.22);
+    }
+
+    .start-main-stage {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      padding: 16px 40px;
+      gap: 24px;
+      max-width: 1380px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 4px solid var(--navy);
+      border-radius: 24px;
+      padding: 28px 32px;
+      box-shadow: 0 14px 36px rgba(15, 37, 68, 0.25);
+      position: relative;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--navy);
+      color: var(--mustard-bright);
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: clamp(1.8rem, 3.2vw, 2.75rem);
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.12;
+      margin-bottom: 6px;
+    }
+
+    .hero-subtitle-badge {
+      display: inline-block;
+      background: var(--emerald-pale);
+      color: var(--emerald-dark);
+      border: 2px solid var(--emerald);
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 6px 16px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--slate-blue);
+      line-height: 1.5;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .start-mascot-showcase {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      position: relative;
+    }
+
+    .start-speech-bubble {
+      background: var(--white);
+      border: 3px solid var(--navy);
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--navy);
+      box-shadow: 0 8px 20px rgba(15, 37, 68, 0.18);
+      max-width: 340px;
+      margin-bottom: 10px;
+      position: relative;
+      text-align: center;
+    }
+
+    .start-speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 14px 12px 0;
+      border-style: solid;
+      border-color: var(--navy) transparent transparent;
+    }
+
+    .start-footer-strip {
+      position: relative;
+      z-index: 2;
+      background: var(--navy);
+      color: var(--sky-light);
+      padding: 10px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-top: 3px solid var(--slate-blue);
+    }
+
+    /* ==================== MODALS ==================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 23, 43, 0.78);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--white);
+      border: 4px solid var(--navy);
+      border-radius: 22px;
+      max-width: 760px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      animation: popIn 0.25s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--mustard);
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: var(--white);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 22px 26px;
+    }
+
+    /* Officer ID Card Form */
+    .id-card-preview {
+      background: linear-gradient(135deg, #0f2544 0%, #1e40af 100%);
+      border: 3px solid var(--mustard);
+      border-radius: 16px;
+      padding: 18px 20px;
+      color: var(--white);
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .id-photo-box {
+      width: 92px;
+      height: 104px;
+      background: var(--sky-pale);
+      border: 3px solid var(--mustard);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 0.95rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2.5px solid var(--slate-light);
+      border-radius: 12px;
+      font-family: var(--font-ui);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--navy);
+      background: #f0f9ff;
+    }
+
+    /* How To Play & Interactive Demo */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .step-item {
+      background: var(--off-white);
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      background: var(--navy);
+      color: var(--mustard-bright);
+      font-weight: 800;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .demo-box {
+      background: linear-gradient(180deg, #e0f2fe 0%, #f1f5f9 100%);
+      border: 3px dashed var(--navy);
+      border-radius: 16px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-stage {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 110px;
+      position: relative;
+      padding: 0 12px;
+    }
+
+    .demo-gate-a {
+      background: var(--emerald);
+      color: var(--white);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 3px solid var(--emerald-dark);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .demo-gate-a.lit {
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+    }
+
+    .demo-bag {
+      background: var(--mustard);
+      border: 3px solid var(--navy);
+      border-radius: 14px;
+      padding: 8px 18px;
+      font-family: var(--font-jawi);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--navy);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: demoSlideBag 3.6s infinite ease-in-out;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    @keyframes demoSlideBag {
+      0%, 15% { left: 54%; transform: translateX(-50%) scale(1); }
+      45%, 70% { left: 20%; transform: translateX(-50%) scale(1.06); }
+      85%, 100% { left: 54%; transform: translateX(-50%) scale(1); }
+    }
+
+    /* ==================== GAMEPLAY SCREEN ==================== */
+    #game-screen {
+      justify-content: space-between;
+    }
+
+    /* Top Flight Info & Mini Boarding Pass Bar */
+    .top-hud {
+      position: relative;
+      z-index: 20;
+      background: var(--navy);
+      border-bottom: 4px solid var(--mustard);
+      padding: 8px 16px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    /* FIDS Mini Board */
+    .fids-panel {
+      background: #071324;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+    }
+
+    .fids-header {
+      color: var(--mustard-bright);
+      font-weight: 700;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 3px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .fids-row {
+      display: grid;
+      grid-template-columns: 48px 112px 136px;
+      gap: 6px;
+      padding: 2px 0;
+      align-items: center;
+    }
+
+    .fids-flight {
+      color: var(--sky);
+      font-weight: 700;
+    }
+
+    .fids-dest {
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .fids-status {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-align: center;
+      font-size: 0.68rem;
+    }
+
+    .status-waiting {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .status-ready {
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      border: 1px solid #10b981;
+    }
+
+    .status-departed {
+      background: #10b981;
+      color: #064e3b;
+    }
+
+    /* Mini Boarding Pass HUD */
+    .mini-boarding-pass {
+      background: var(--white);
+      color: var(--navy);
+      border-radius: 12px;
+      border: 2.5px solid var(--mustard);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      position: relative;
+    }
+
+    .mbp-main {
+      padding: 6px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .mbp-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--navy-mid);
+      border-bottom: 1.5px dashed #cbd5e1;
+      padding-bottom: 3px;
+    }
+
+    .mbp-metrics {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mbp-metric {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mbp-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--slate-blue);
+      text-transform: uppercase;
+    }
+
+    .mbp-val {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .mbp-progress-wrap {
+      width: 110px;
+    }
+
+    .mbp-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .mbp-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--emerald) 0%, var(--mustard) 100%);
+      transition: width 0.4s ease;
+    }
+
+    .mbp-stub {
+      background: var(--mustard);
+      border-left: 2px dashed var(--navy);
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 82px;
+    }
+
+    .mbp-score-big {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .hud-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .hud-icon-btn {
+      background: rgba(255,255,255,0.14);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s;
+    }
+
+    .hud-icon-btn:hover {
+      background: rgba(255,255,255,0.26);
+    }
+
+    /* Main Airport Terminal Arena */
+    .terminal-arena {
+      position: relative;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 245px 1fr 245px;
+      gap: 12px;
+      padding: 12px 16px 14px;
+      overflow: hidden;
+    }
+
+    /* Animated Sky & Runway Backdrop behind terminal windows */
+    .arena-window-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .cloud-drift {
+      animation: driftClouds 45s linear infinite;
+    }
+
+    @keyframes driftClouds {
+      from { transform: translateX(-120px); }
+      to { transform: translateX(1400px); }
+    }
+
+    .outside-plane-taxi {
+      animation: outsideTaxi 28s linear infinite;
+    }
+
+    @keyframes outsideTaxi {
+      0% { transform: translateX(-220px); }
+      100% { transform: translateX(1550px); }
+    }
+
+    /* ==================== DROP ZONES (GATE A & GATE B) ==================== */
+    .gate-zone {
+      position: relative;
+      z-index: 5;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .gate-a {
+      background: linear-gradient(180deg, rgba(6, 95, 70, 0.93) 0%, rgba(4, 120, 87, 0.96) 100%);
+      border: 4px solid #34d399;
+      box-shadow: 0 10px 25px rgba(4, 120, 87, 0.35);
+      color: var(--white);
+    }
+
+    .gate-b {
+      background: linear-gradient(180deg, rgba(15, 37, 68, 0.94) 0%, rgba(3, 105, 161, 0.96) 100%);
+      border: 4px solid #38bdf8;
+      box-shadow: 0 10px 25px rgba(3, 105, 161, 0.35);
+      color: var(--white);
+    }
+
+    .gate-zone.drag-over,
+    .gate-zone:hover {
+      transform: scale(1.025);
+    }
+
+    .gate-a.drag-over {
+      box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.55), 0 14px 32px rgba(16, 185, 129, 0.6);
+      border-color: #fde047;
+    }
+
+    .gate-b.drag-over {
+      box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.55), 0 14px 32px rgba(2, 132, 199, 0.6);
+      border-color: #fde047;
+    }
+
+    .gate-zone.gate-success-flash {
+      animation: gateSuccessPulse 0.7s ease;
+    }
+
+    @keyframes gateSuccessPulse {
+      0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.9); }
+      50% { box-shadow: 0 0 0 18px rgba(74, 222, 128, 0.35); border-color: #fef08a; }
+      100% { box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
+    }
+
+    .gate-sign-board {
+      background: var(--navy);
+      border: 2.5px solid var(--mustard);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .gate-code {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--mustard-bright);
+      letter-spacing: 0.05em;
+    }
+
+    .gate-island {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--white);
+      margin-top: 2px;
+    }
+
+    .gate-hint-pill {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.16);
+      color: #fef08a;
+    }
+
+    .gate-illustration-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 6px 0;
+    }
+
+    .gate-drop-target-box {
+      border: 2.5px dashed rgba(255,255,255,0.65);
+      border-radius: 14px;
+      padding: 8px;
+      text-align: center;
+      background: rgba(0,0,0,0.18);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .gate-counter-badge {
+      margin-top: 5px;
+      background: rgba(15, 37, 68, 0.85);
+      color: var(--mustard-bright);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* ==================== CENTER CONVEYOR & KAPTEN JAWI ==================== */
+    .center-workstation {
+      position: relative;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+    }
+
+    /* Kapten Jawi + Speech Bubble Area */
+    .officer-station {
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 14px;
+      padding: 4px 10px;
+      min-height: 155px;
+    }
+
+    .kapten-svg-container {
+      width: 122px;
+      height: 148px;
+      flex-shrink: 0;
+      position: relative;
+      transform-origin: bottom center;
+    }
+
+    /* Kapten Jawi Animations */
+    .kapten-svg-container.anim-wave #kj-arm-right {
+      transform-origin: 84px 78px;
+      animation: kjWave 0.65s ease-in-out infinite alternate;
+    }
+    @keyframes kjWave {
+      from { transform: rotate(-18deg); }
+      to { transform: rotate(24deg); }
+    }
+
+    .kapten-svg-container.anim-nod #kj-head {
+      transform-origin: 60px 56px;
+      animation: kjNod 0.45s ease-in-out 3;
+    }
+    @keyframes kjNod {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(4px) rotate(4deg); }
+    }
+
+    .kapten-svg-container.anim-thumbsup {
+      animation: kjBounce 0.5s ease 2;
+    }
+    @keyframes kjBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .kapten-svg-container.anim-think #kj-head {
+      transform-origin: 60px 56px;
+      animation: kjTilt 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes kjTilt {
+      from { transform: rotate(-5deg); }
+      to { transform: rotate(5deg); }
+    }
+
+    .kapten-svg-container.anim-point-left {
+      transform: scaleX(-1);
+    }
+
+    .speech-bubble-card {
+      background: var(--white);
+      border: 3px solid var(--navy);
+      border-radius: 18px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 20px rgba(15, 37, 68, 0.18);
+      max-width: 440px;
+      flex: 1;
+      position: relative;
+    }
+
+    .speech-bubble-card::before {
+      content: '';
+      position: absolute;
+      left: -14px;
+      bottom: 26px;
+      border-width: 10px 14px 10px 0;
+      border-style: solid;
+      border-color: transparent var(--navy) transparent transparent;
+    }
+
+    .speech-speaker-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--navy);
+      background: var(--mustard-bright);
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      letter-spacing: 0.04em;
+    }
+
+    .speech-text {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.42;
+    }
+
+    .audio-warning-banner {
+      margin-top: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      padding: 4px 8px;
+      display: none;
+    }
+
+    /* Active Suitcase Stage & Conveyor Belt */
+    .conveyor-stage {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    /* Scanner Arch */
+    .scanner-arch-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      height: 225px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .scanner-laser-beam {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      height: 165px;
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.35) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border-top: 3px solid #34d399;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .scanner-laser-beam.scanning {
+      animation: laserSweep 0.75s ease-in-out;
+    }
+
+    @keyframes laserSweep {
+      0% { opacity: 0; transform: translateX(-50%) scaleY(0.1); }
+      40% { opacity: 1; transform: translateX(-50%) scaleY(1); }
+      100% { opacity: 0; transform: translateX(-50%) scaleY(0.2); }
+    }
+
+    /* Draggable Suitcase Card */
+    #active-suitcase {
+      position: relative;
+      z-index: 15;
+      width: 265px;
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+      margin-bottom: -10px;
+    }
+
+    #active-suitcase.dragging {
+      cursor: grabbing;
+      z-index: 60;
+      transition: none;
+      filter: drop-shadow(0 18px 24px rgba(15, 37, 68, 0.45));
+    }
+
+    #active-suitcase.selected-bag {
+      filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.95));
+      transform: translateY(-8px) scale(1.03);
+    }
+
+    #active-suitcase.shake-wrong {
+      animation: bagShakeWrong 0.48s ease;
+    }
+
+    @keyframes bagShakeWrong {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-14px) rotate(-3deg); }
+      40% { transform: translateX(14px) rotate(3deg); }
+      60% { transform: translateX(-10px) rotate(-2deg); }
+      80% { transform: translateX(10px) rotate(2deg); }
+    }
+
+    .suitcase-visual-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Jawi Tag Overlay on Suitcase */
+    .jawi-luggage-tag {
+      position: absolute;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 206px;
+      background: var(--white);
+      border: 3.5px solid var(--navy);
+      border-radius: 14px;
+      padding: 6px 10px 8px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.28);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tag-header-strip {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #cbd5e1;
+      padding-bottom: 3px;
+      margin-bottom: 2px;
+    }
+
+    .bag-id-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: var(--navy);
+      color: var(--mustard-bright);
+      padding: 1px 7px;
+      border-radius: 5px;
+    }
+
+    .tag-audio-btn {
+      background: var(--mustard);
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      border-radius: 8px;
+      padding: 3px 9px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.12s, background 0.12s;
+    }
+
+    .tag-audio-btn:hover {
+      background: var(--mustard-bright);
+      transform: scale(1.06);
+    }
+
+    .tag-audio-btn.speaking {
+      background: var(--emerald);
+      color: var(--white);
+      animation: pulseSpeak 0.6s infinite alternate;
+    }
+
+    @keyframes pulseSpeak {
+      from { transform: scale(1); }
+      to { transform: scale(1.09); }
+    }
+
+    .jawi-word-display {
+      font-family: var(--font-jawi);
+      font-size: 2.65rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.3;
+      direction: rtl;
+      unicode-bidi: isolate;
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    /* Mechanical Conveyor Belt */
+    .conveyor-machine {
+      width: 100%;
+      max-width: 580px;
+      background: #1e293b;
+      border: 4px solid var(--navy);
+      border-radius: 18px;
+      padding: 6px 12px 8px;
+      box-shadow: 0 10px 24px rgba(15, 37, 68, 0.35);
+      position: relative;
+      z-index: 8;
+    }
+
+    .conveyor-belt-track {
+      height: 22px;
+      border-radius: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        #334155 0px,
+        #334155 18px,
+        #475569 18px,
+        #475569 36px
+      );
+      background-size: 36px 100%;
+      border: 2px solid #0f172a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .conveyor-belt-track.running {
+      animation: beltScroll 0.55s linear infinite;
+    }
+
+    @keyframes beltScroll {
+      from { background-position: 0 0; }
+      to { background-position: 36px 0; }
+    }
+
+    .conveyor-rollers {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 14px 0;
+    }
+
+    .roller-wheel {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--mustard-bright) 30%, #64748b 35%, #1e293b 100%);
+      border: 2px solid #94a3b8;
+    }
+
+    .conveyor-belt-track.running + .conveyor-rollers .roller-wheel {
+      animation: spinWheel 0.7s linear infinite;
+    }
+
+    @keyframes spinWheel {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .interaction-helper-bar {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: rgba(255,255,255,0.88);
+      padding: 4px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--navy);
+      text-align: center;
+    }
+
+    /* ==================== FEEDBACK BANNER OVERLAY ==================== */
+    .feedback-overlay-card {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 45;
+      background: var(--white);
+      border: 4px solid var(--emerald);
+      border-radius: 20px;
+      padding: 16px 22px;
+      width: min(500px, 92%);
+      box-shadow: 0 18px 40px rgba(15, 37, 68, 0.35);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: popIn 0.25s ease-out;
+    }
+
+    .feedback-overlay-card.active {
+      display: flex;
+    }
+
+    .feedback-word-reveal {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--emerald-pale);
+      border: 2px solid var(--emerald);
+      border-radius: 14px;
+      padding: 8px 18px;
+      margin: 8px 0 10px;
+    }
+
+    .fb-jawi {
+      font-family: var(--font-jawi);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--navy);
+      direction: rtl;
+    }
+
+    .fb-rumi {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--emerald-dark);
+    }
+
+    /* Floating Score Animation (+10 / +5) */
+    .floating-points {
+      position: fixed;
+      z-index: 90;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1.55rem;
+      color: var(--navy);
+      background: var(--mustard-bright);
+      border: 3px solid var(--navy);
+      padding: 4px 12px;
+      border-radius: 999px;
+      pointer-events: none;
+      animation: floatToPass 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes floatToPass {
+      0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+      30% { opacity: 1; transform: translate(-50%, -35px) scale(1.15); }
+      100% { opacity: 0; transform: translate(120px, -210px) scale(0.65); }
+    }
+
+    /* ==================== FINALE CINEMATIC & BOARDING PASS SCREEN ==================== */
+    #finale-screen {
+      background: linear-gradient(180deg, #0284c7 0%, #7dd3fc 58%, #334155 58.5%, #1e293b 100%);
+      justify-content: space-between;
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    .finale-sky-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .takeoff-scene-box {
+      width: min(920px, 96%);
+      height: 360px;
+      background: linear-gradient(180deg, #0ea5e9 0%, #bae6fd 66%, #15803d 66.5%, #166534 74%, #334155 74.5%, #1e293b 100%);
+      border: 4px solid var(--navy);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.4);
+    }
+
+    .takeoff-banner {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 37, 68, 0.92);
+      border: 2.5px solid var(--mustard);
+      color: var(--white);
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    #plane-jq101, #plane-jq102 {
+      position: absolute;
+      transition: transform 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 6;
+    }
+
+    #plane-jq101 {
+      bottom: 58px;
+      left: 70px;
+    }
+
+    #plane-jq102 {
+      bottom: 34px;
+      left: 20px;
+    }
+
+    #plane-jq101.taxi {
+      transform: translateX(220px);
+    }
+
+    #plane-jq102.taxi {
+      transform: translateX(200px);
+    }
+
+    #plane-jq101.liftoff {
+      transform: translate(920px, -310px) rotate(-18deg);
+    }
+
+    #plane-jq102.liftoff {
+      transform: translate(960px, -280px) rotate(-16deg);
+    }
+
+    /* Final Digital Boarding Pass Container */
+    .final-boarding-pass-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: min(880px, 96%);
+      z-index: 20;
+      animation: popIn 0.4s ease-out;
+    }
+
+    .final-boarding-pass-wrap.active {
+      display: flex;
+    }
+
+    .digital-boarding-pass {
+      width: 100%;
+      background: var(--white);
+      border: 4px solid var(--navy);
+      border-radius: 22px;
+      display: grid;
+      grid-template-columns: 1.85fr 1fr;
+      overflow: hidden;
+      box-shadow: 0 22px 50px rgba(9, 23, 43, 0.48);
+      position: relative;
+    }
+
+    .bp-left-main {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bp-header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--mustard);
+    }
+
+    .bp-airline-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bp-body {
+      padding: 16px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .bp-route-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--off-white);
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 10px 16px;
+    }
+
+    .bp-airport-code {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .bp-airport-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--slate-blue);
+    }
+
+    .bp-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .bp-field-box {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 7px 10px;
+    }
+
+    .bp-field-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--slate-blue);
+      text-transform: uppercase;
+    }
+
+    .bp-field-value {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-top: 2px;
+    }
+
+    .mission-stamp {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      border: 3.5px solid var(--emerald-dark);
+      color: var(--emerald-dark);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      transform: rotate(-8deg);
+      background: rgba(209, 250, 229, 0.85);
+      letter-spacing: 0.06em;
+    }
+
+    .bp-right-stub {
+      background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+      border-left: 3px dashed var(--navy);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .bp-stub-header {
+      background: var(--mustard);
+      color: var(--navy);
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-align: center;
+      border-bottom: 4px solid var(--navy);
+    }
+
+    .bp-stub-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .award-rank-badge {
+      background: var(--navy);
+      color: var(--mustard-bright);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+
+    .cleared-pill {
+      background: var(--emerald);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .finale-buttons-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 80;
+    }
+
+    /* ==================== TEACHER AUDIO STUDIO TABLE ==================== */
+    .volume-sliders-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
+      margin-bottom: 16px;
+    }
+
+    .vol-control label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .vol-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--navy);
+    }
+
+    .teacher-word-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .teacher-word-table th {
+      background: var(--navy);
+      color: var(--white);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .teacher-word-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #cbd5e1;
+      vertical-align: middle;
+    }
+
+    .t-jawi {
+      font-family: var(--font-jawi);
+      font-size: 1.45rem;
+      font-weight: 700;
+      direction: rtl;
+    }
+
+    .mini-btn {
+      padding: 4px 9px;
+      border-radius: 7px;
+      border: 1.5px solid var(--navy);
+      font-weight: 700;
+      font-size: 0.74rem;
+      cursor: pointer;
+      background: var(--white);
+      color: var(--navy);
+      margin-right: 4px;
+    }
+
+    .mini-btn.rec-active {
+      background: var(--danger);
+      color: var(--white);
+      border-color: #991b1b;
+    }
+
+    /* ==================== PRINT STYLES ==================== */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-boarding-pass,
+      #printable-boarding-pass * {
+        visibility: visible;
+      }
+      #printable-boarding-pass {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        width: calc(100% - 24px);
+        box-shadow: none;
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 960px) {
+      .start-main-stage {
+        grid-template-columns: 1fr;
+        padding: 14px 20px;
+        overflow-y: auto;
+      }
+      .start-mascot-showcase {
+        display: none;
+      }
+      .terminal-arena {
+        grid-template-columns: 170px 1fr 170px;
+        gap: 8px;
+        padding: 8px;
+      }
+      .top-hud {
+        grid-template-columns: 1fr auto;
+      }
+      .fids-panel {
+        display: none;
+      }
+      .digital-boarding-pass {
+        grid-template-columns: 1fr;
+      }
+      .bp-right-stub {
+        border-left: none;
+        border-top: 3px dashed var(--navy);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- =====================================================================
+         SCREEN 1: HALAMAN PERMULAAN (AIRPORT ENTRANCE)
+    ====================================================================== -->
+    <section id="start-screen" class="screen active">
+      <!-- Terminal Window SVG Backdrop -->
+      <svg class="terminal-windows-bg" viewBox="0 0 1440 810" preserveAspectRatio="xMidYMid slice">
+        <!-- Window Mullions -->
+        <g stroke="#64748b" stroke-width="8" opacity="0.35">
+          <line x1="240" y1="0" x2="240" y2="430" />
+          <line x1="480" y1="0" x2="480" y2="430" />
+          <line x1="720" y1="0" x2="720" y2="430" />
+          <line x1="960" y1="0" x2="960" y2="430" />
+          <line x1="1200" y1="0" x2="1200" y2="430" />
+          <line x1="0" y1="210" x2="1440" y2="210" />
+        </g>
+        <!-- Control Tower -->
+        <g transform="translate(1080, 155)">
+          <rect x="38" y="80" width="34" height="190" fill="#cbd5e1" stroke="#0f2544" stroke-width="3" />
+          <polygon points="15,80 95,80 82,42 28,42" fill="#0f2544" />
+          <rect x="24" y="50" width="62" height="22" rx="4" fill="#38bdf8" />
+          <line x1="55" y1="15" x2="55" y2="42" stroke="#0f2544" stroke-width="4" />
+          <circle cx="55" cy="14" r="5" fill="#ef4444" />
+        </g>
+        <!-- Parked Airliner outside -->
+        <g transform="translate(650, 275)">
+          <ellipse cx="220" cy="95" rx="200" ry="12" fill="rgba(15,37,68,0.2)" />
+          <polygon points="60,65 25,18 55,18 98,65" fill="#0f2544" />
+          <polygon points="35,28 52,28 64,45 45,45" fill="#f59e0b" />
+          <rect x="55" y="52" width="310" height="44" rx="22" fill="#ffffff" stroke="#0f2544" stroke-width="3" />
+          <path d="M55,76 L365,76" stroke="#0284c7" stroke-width="6" />
+          <path d="M330,56 Q362,56 365,74 L330,74 Z" fill="#0f2544" />
+          <!-- Windows -->
+          <g fill="#0f2544">
+            <rect x="110" y="61" width="10" height="8" rx="2" />
+            <rect x="128" y="61" width="10" height="8" rx="2" />
+            <rect x="146" y="61" width="10" height="8" rx="2" />
+            <rect x="164" y="61" width="10" height="8" rx="2" />
+            <rect x="182" y="61" width="10" height="8" rx="2" />
+            <rect x="200" y="61" width="10" height="8" rx="2" />
+            <rect x="218" y="61" width="10" height="8" rx="2" />
+            <rect x="236" y="61" width="10" height="8" rx="2" />
+            <rect x="254" y="61" width="10" height="8" rx="2" />
+            <rect x="272" y="61" width="10" height="8" rx="2" />
+          </g>
+          <polygon points="185,78 245,78 215,104 168,104" fill="#94a3b8" stroke="#0f2544" stroke-width="2.5" />
+          <rect x="195" y="92" width="32" height="14" rx="5" fill="#0f2544" />
+        </g>
+        <!-- Terminal Floor Perspective -->
+        <rect x="0" y="425" width="1440" height="385" fill="#cbd5e1" />
+        <line x1="0" y1="425" x2="1440" y2="425" stroke="#0f2544" stroke-width="5" />
+      </svg>
+
+      <!-- Top Header -->
+      <header class="start-header-bar">
+        <div class="airport-brand">
+          <span class="brand-badge">JAWI TAHUN 2</span>
+          <div>
+            <div style="font-weight:800; font-size:1.05rem; letter-spacing:0.04em;">JAWIQUEST: MISI DUNIA JAWI</div>
+            <div style="font-size:0.78rem; color:#bae6fd;">Unit Pengurusan Bagasi &amp; Fonetik Vokal</div>
+          </div>
+        </div>
+        <div class="start-top-controls">
+          <button class="btn btn-outline-light" id="btn-open-teacher-start" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            Audio &amp; Rakaman Guru
+          </button>
+          <button class="btn btn-outline-light" id="btn-mute-start" type="button">
+            <span id="mute-start-label">Bunyi: Hidup</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Center Stage -->
+      <main class="start-main-stage">
+        <div class="hero-card">
+          <span class="hero-tag">SIMULASI LAPANGAN TERBANG INTERAKTIF</span>
+          <h1 class="hero-title">JAWIQUEST INTERNATIONAL AIRPORT</h1>
+          <div class="hero-subtitle-badge">MISI BAGASI VOKAL: E-PEPET &amp; E-TALING</div>
+          <p class="hero-desc">
+            “Setiap bagasi mempunyai destinasi. Bantu kami menghantar semuanya ke tempat yang betul!”
+          </p>
+          <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+            <div style="background:#d1fae5; border:2px solid #10b981; border-radius:12px; padding:8px 14px; font-size:0.86rem; font-weight:700; color:#065f46;">
+              GATE A: Pulau E-Pepet (JQ101)
+            </div>
+            <div style="background:#e0f2fe; border:2px solid #0284c7; border-radius:12px; padding:8px 14px; font-size:0.86rem; font-weight:700; color:#075985;">
+              GATE B: Pulau E-Taling (JQ102)
+            </div>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="btn-start-mission" type="button">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+              MULAKAN MISI
+            </button>
+            <button class="btn btn-secondary" id="btn-how-to-play" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              CARA BERMAIN
+            </button>
+          </div>
+        </div>
+
+        <!-- Kapten Jawi + Luggage Trolley Showcase -->
+        <div class="start-mascot-showcase">
+          <div class="start-speech-bubble">
+            “Selamat datang ke JawiQuest International Airport! Saya <strong>Kapten Jawi</strong>. Mari daftar masuk sebagai Pegawai Bagasi Jawi!”
+          </div>
+          <svg width="320" height="275" viewBox="0 0 320 275">
+            <!-- Luggage Trolley on Left -->
+            <g transform="translate(12, 115)">
+              <rect x="10" y="112" width="110" height="10" rx="5" fill="#0f2544" />
+              <line x1="22" y1="22" x2="22" y2="112" stroke="#475569" stroke-width="6" stroke-linecap="round" />
+              <line x1="108" y1="45" x2="108" y2="112" stroke="#475569" stroke-width="6" stroke-linecap="round" />
+              <path d="M12,24 L34,24" stroke="#f59e0b" stroke-width="7" stroke-linecap="round" />
+              <circle cx="30" cy="132" r="12" fill="#0f2544" />
+              <circle cx="30" cy="132" r="5" fill="#fbbf24" />
+              <circle cx="100" cy="132" r="12" fill="#0f2544" />
+              <circle cx="100" cy="132" r="5" fill="#fbbf24" />
+              <!-- Stacked Suitcases -->
+              <rect x="30" y="68" width="72" height="44" rx="8" fill="#10b981" stroke="#0f2544" stroke-width="3" />
+              <line x1="48" y1="68" x2="48" y2="112" stroke="#0f2544" stroke-width="3" />
+              <line x1="84" y1="68" x2="84" y2="112" stroke="#0f2544" stroke-width="3" />
+              <rect x="38" y="34" width="58" height="34" rx="7" fill="#f59e0b" stroke="#0f2544" stroke-width="3" />
+              <rect x="57" y="25" width="20" height="9" rx="3" fill="none" stroke="#0f2544" stroke-width="3" />
+            </g>
+
+            <!-- Kapten Jawi Full Standing Illustration -->
+            <g transform="translate(148, 12)">
+              <!-- Shadow -->
+              <ellipse cx="75" cy="248" rx="52" ry="9" fill="rgba(15,37,68,0.22)" />
+              <!-- Legs -->
+              <rect x="52" y="178" width="18" height="62" rx="6" fill="#0f2544" />
+              <rect x="80" y="178" width="18" height="62" rx="6" fill="#0f2544" />
+              <!-- Shoes -->
+              <path d="M46,236 Q46,228 60,228 L72,228 L72,244 L46,244 Z" fill="#1e293b" />
+              <path d="M78,228 L90,228 Q104,228 104,236 L104,244 L78,244 Z" fill="#1e293b" />
+              <!-- Torso (Navy Shirt + Yellow Safety Vest) -->
+              <rect x="42" y="96" width="66" height="86" rx="14" fill="#173663" stroke="#0f2544" stroke-width="3" />
+              <!-- Safety Vest -->
+              <path d="M44,98 L64,98 L68,142 L68,180 L44,180 Z" fill="#fbbf24" stroke="#0f2544" stroke-width="2.5" />
+              <path d="M106,98 L86,98 L82,142 L82,180 L106,180 Z" fill="#fbbf24" stroke="#0f2544" stroke-width="2.5" />
+              <!-- Reflective Strips -->
+              <rect x="45" y="136" width="22" height="7" fill="#ffffff" />
+              <rect x="83" y="136" width="22" height="7" fill="#ffffff" />
+              <rect x="45" y="156" width="22" height="7" fill="#ffffff" />
+              <rect x="83" y="156" width="22" height="7" fill="#ffffff" />
+              <!-- Tie -->
+              <polygon points="75,98 70,108 75,138 80,108" fill="#0f2544" />
+              <!-- Name Badge JAWIQUEST -->
+              <rect x="84" y="110" width="20" height="11" rx="2" fill="#0f2544" />
+              <rect x="86" y="113" width="16" height="5" fill="#38bdf8" />
+              <!-- Left Arm holding Scanner/Clipboard -->
+              <path d="M42,106 Q22,126 34,148" fill="none" stroke="#173663" stroke-width="14" stroke-linecap="round" />
+              <circle cx="36" cy="150" r="8" fill="#f1c29b" stroke="#0f2544" stroke-width="2" />
+              <rect x="18" y="132" width="26" height="34" rx="4" fill="#0f2544" stroke="#38bdf8" stroke-width="2" />
+              <rect x="23" y="138" width="16" height="10" fill="#10b981" />
+              <!-- Right Arm Waving -->
+              <path d="M108,106 Q134,88 132,64" fill="none" stroke="#173663" stroke-width="14" stroke-linecap="round" />
+              <circle cx="132" cy="60" r="9" fill="#f1c29b" stroke="#0f2544" stroke-width="2" />
+              <!-- Neck & Head -->
+              <rect x="66" y="82" width="18" height="16" rx="6" fill="#f1c29b" />
+              <circle cx="75" cy="56" r="30" fill="#f1c29b" stroke="#0f2544" stroke-width="3" />
+              <!-- Friendly Face -->
+              <circle cx="64" cy="54" r="3.5" fill="#0f2544" />
+              <circle cx="86" cy="54" r="3.5" fill="#0f2544" />
+              <circle cx="65" cy="53" r="1.2" fill="#ffffff" />
+              <circle cx="87" cy="53" r="1.2" fill="#ffffff" />
+              <path d="M58,46 Q64,43 70,46" fill="none" stroke="#0f2544" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M80,46 Q86,43 92,46" fill="none" stroke="#0f2544" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M64,66 Q75,76 86,66" fill="none" stroke="#0f2544" stroke-width="3" stroke-linecap="round" />
+              <!-- Officer Cap -->
+              <path d="M42,36 Q75,14 108,36 L102,44 L48,44 Z" fill="#0f2544" />
+              <rect x="46" y="38" width="58" height="7" rx="3" fill="#f59e0b" />
+              <polygon points="75,20 78,27 85,27 79,31 81,38 75,34 69,38 71,31 65,27 72,27" fill="#fbbf24" />
+            </g>
+          </svg>
+        </div>
+      </main>
+
+      <footer class="start-footer-strip">
+        <span>Objektif: Mengenal pasti &amp; mengelaskan vokal E-Pepet dan E-Taling dalam tulisan Jawi (Pedoman DBP)</span>
+        <span>Mod Kawalan: Tetikus (Drag &amp; Drop) &bull; Skrin Sentuh &bull; Klik-Pilih</span>
+      </footer>
+    </section>
+
+    <!-- =====================================================================
+         SCREEN 2: SKRIN PERMAINAN UTAMA (SIMULASI TERMINAL BAGASI)
+    ====================================================================== -->
+    <section id="game-screen" class="screen">
+      <!-- Top HUD: FIDS + Mini Boarding Pass + Controls -->
+      <header class="top-hud">
+        <!-- FIDS Board -->
+        <div class="fids-panel" aria-label="Papan Status Penerbangan">
+          <div class="fids-header">
+            <span>FLIGHT STATUS</span>
+            <span>JAWIQUEST INTL</span>
+          </div>
+          <div class="fids-row">
+            <span class="fids-flight">JQ101</span>
+            <span class="fids-dest">PULAU E-PEPET</span>
+            <span class="fids-status status-waiting" id="fids-status-a">MENUNGGU BAGASI</span>
+          </div>
+          <div class="fids-row">
+            <span class="fids-flight">JQ102</span>
+            <span class="fids-dest">PULAU E-TALING</span>
+            <span class="fids-status status-waiting" id="fids-status-b">MENUNGGU BAGASI</span>
+          </div>
+        </div>
+
+        <!-- Mini Digital Boarding Pass -->
+        <div class="mini-boarding-pass" id="mini-boarding-pass">
+          <div class="mbp-main">
+            <div class="mbp-top-row">
+              <span>JAWIQUEST AIRLINES &bull; FLIGHT JQ202</span>
+              <span id="hud-flight-status" style="color:#047857;">STATUS: LOADING BAGGAGE</span>
+            </div>
+            <div class="mbp-metrics">
+              <div class="mbp-metric">
+                <span class="mbp-label">Pegawai Bagasi</span>
+                <span class="mbp-val" id="hud-player-name">PEGAWAI JAWI</span>
+              </div>
+              <div class="mbp-metric">
+                <span class="mbp-label">Bagasi Dihantar</span>
+                <span class="mbp-val"><span id="hud-delivered">0</span>/<span id="hud-total">12</span></span>
+              </div>
+              <div class="mbp-metric">
+                <span class="mbp-label">Baki Bagasi</span>
+                <span class="mbp-val" id="hud-remaining">12</span>
+              </div>
+              <div class="mbp-progress-wrap">
+                <span class="mbp-label">Kemajuan Misi</span>
+                <div class="mbp-progress-bar">
+                  <div class="mbp-progress-fill" id="hud-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mbp-stub">
+            <span style="font-size:0.62rem; font-weight:800; color:#0f2544;">MARKAH</span>
+            <span class="mbp-score-big"><span id="hud-score">0</span>/120</span>
+            <span style="font-size:0.6rem; font-weight:700; color:#0f2544;">SEAT 02A</span>
+          </div>
+        </div>
+
+        <!-- Top Action Buttons -->
+        <div class="hud-actions">
+          <button class="hud-icon-btn" id="btn-hud-mute" type="button" title="Hidupkan / Matikan Bunyi">
+            <span id="hud-mute-icon">🔊</span>
+            <span id="hud-mute-text">Bunyi</span>
+          </button>
+          <button class="hud-icon-btn" id="btn-hud-audio-settings" type="button" title="Tetapan Audio & Rakaman Guru">
+            🎙️ Audio Guru
+          </button>
+          <button class="hud-icon-btn" id="btn-hud-help" type="button" title="Panduan Misi">
+            ❓ Panduan
+          </button>
+          <button class="hud-icon-btn" id="btn-hud-menu" type="button" title="Kembali ke Menu Utama">
+            🏠 Menu
+          </button>
+        </div>
+      </header>
+
+      <!-- Main 3-Column Airport Simulation Arena -->
+      <main class="terminal-arena" id="terminal-arena">
+        <!-- Animated Terminal Window Backdrop -->
+        <svg class="arena-window-backdrop" viewBox="0 0 1440 720" preserveAspectRatio="xMidYMid slice">
+          <!-- Sky & Runway -->
+          <rect x="0" y="0" width="1440" height="360" fill="#7dd3fc" />
+          <rect x="0" y="360" width="1440" height="95" fill="#94a3b8" />
+          <line x1="0" y1="408" x2="1440" y2="408" stroke="#f8fafc" stroke-width="4" stroke-dasharray="28 22" />
+          <!-- Drifting Clouds -->
+          <g class="cloud-drift" fill="#ffffff" opacity="0.85">
+            <ellipse cx="140" cy="85" rx="58" ry="22" />
+            <ellipse cx="178" cy="78" rx="44" ry="20" />
+            <ellipse cx="640" cy="115" rx="68" ry="24" />
+            <ellipse cx="685" cy="106" rx="48" ry="20" />
+            <ellipse cx="1120" cy="75" rx="60" ry="21" />
+          </g>
+          <!-- Taxiing Background Airplane -->
+          <g class="outside-plane-taxi" transform="translate(0, 290)">
+            <polygon points="35,45 10,12 32,12 62,45" fill="#0f2544" />
+            <rect x="30" y="36" width="190" height="28" rx="14" fill="#ffffff" stroke="#0f2544" stroke-width="2.5" />
+            <line x1="30" y1="51" x2="220" y2="51" stroke="#f59e0b" stroke-width="4" />
+            <polygon points="105,53 145,53 125,70 95,70" fill="#64748b" />
+          </g>
+          <!-- Window Frames -->
+          <g stroke="#475569" stroke-width="7" opacity="0.3">
+            <line x1="360" y1="0" x2="360" y2="455" />
+            <line x1="720" y1="0" x2="720" y2="455" />
+            <line x1="1080" y1="0" x2="1080" y2="455" />
+            <line x1="0" y1="220" x2="1440" y2="220" />
+          </g>
+          <!-- Terminal Floor -->
+          <rect x="0" y="455" width="1440" height="265" fill="#cbd5e1" />
+          <line x1="0" y1="455" x2="1440" y2="455" stroke="#0f2544" stroke-width="4" />
+        </svg>
+
+        <!-- LEFT DROP ZONE: GATE A — PULAU E-PEPET -->
+        <aside class="gate-zone gate-a" id="gate-a-zone" data-gate="e-pepet" role="button" tabindex="0" aria-label="Gate A Pulau E-Pepet">
+          <div class="gate-sign-board">
+            <div class="gate-code">GATE A</div>
+            <div class="gate-island">PULAU E-PEPET</div>
+            <span class="gate-hint-pill">Penerbangan JQ101</span>
+          </div>
+
+          <div class="gate-illustration-wrap">
+            <!-- Detailed SVG Aircraft & Loading Trolley for Gate A -->
+            <svg width="205" height="175" viewBox="0 0 210 180">
+              <!-- Jet Bridge / Gate Tunnel -->
+              <rect x="0" y="25" width="52" height="36" rx="4" fill="#0f2544" stroke="#fbbf24" stroke-width="2.5" />
+              <rect x="44" y="31" width="18" height="24" fill="#334155" />
+              <!-- Emerald Tail Aircraft -->
+              <polygon points="62,56 44,18 68,18 92,56" fill="#10b981" stroke="#0f2544" stroke-width="2.5" />
+              <rect x="58" y="48" width="136" height="34" rx="17" fill="#ffffff" stroke="#0f2544" stroke-width="3" />
+              <path d="M58,66 L194,66" stroke="#10b981" stroke-width="5" />
+              <path d="M168,51 Q192,51 194,64 L168,64 Z" fill="#0f2544" />
+              <g fill="#0f2544">
+                <circle cx="95" cy="57" r="3" />
+                <circle cx="109" cy="57" r="3" />
+                <circle cx="123" cy="57" r="3" />
+                <circle cx="137" cy="57" r="3" />
+                <circle cx="151" cy="57" r="3" />
+              </g>
+              <polygon points="112,68 148,68 128,88 102,88" fill="#cbd5e1" stroke="#0f2544" stroke-width="2" />
+              <!-- Airport Baggage Trolley below plane -->
+              <g transform="translate(36, 108)">
+                <rect x="10" y="42" width="124" height="8" rx="4" fill="#0f2544" />
+                <line x1="18" y1="8" x2="18" y2="42" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" />
+                <line x1="126" y1="8" x2="126" y2="42" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" />
+                <circle cx="30" cy="56" r="9" fill="#0f2544" />
+                <circle cx="30" cy="56" r="4" fill="#fbbf24" />
+                <circle cx="114" cy="56" r="9" fill="#0f2544" />
+                <circle cx="114" cy="56" r="4" fill="#fbbf24" />
+                <!-- Dynamic Loaded Bags on Trolley -->
+                <g id="gate-a-trolley-bags"></g>
+              </g>
+            </svg>
+          </div>
+
+          <div class="gate-drop-target-box">
+            <div>Seret atau Klik di Sini untuk Hantar ke <strong>Gate A</strong></div>
+            <div class="gate-counter-badge">Dimuatkan: <span id="count-gate-a">0</span>/6 Bagasi</div>
+          </div>
+        </aside>
+
+        <!-- CENTER WORKSTATION: KAPTEN JAWI + CONVEYOR BELT -->
+        <section class="center-workstation">
+          <!-- Kapten Jawi Persistent Character + Speech Bubble -->
+          <div class="officer-station">
+            <div class="kapten-svg-container anim-wave" id="kapten-jawi-box">
+              <svg viewBox="0 0 120 150" width="122" height="148">
+                <!-- Shadow -->
+                <ellipse cx="60" cy="144" rx="40" ry="5" fill="rgba(15,37,68,0.22)" />
+                <!-- Torso -->
+                <rect x="30" y="76" width="60" height="66" rx="12" fill="#173663" stroke="#0f2544" stroke-width="2.5" />
+                <!-- Yellow High-Vis Safety Vest -->
+                <path d="M32,78 L50,78 L54,112 L54,142 L32,142 Z" fill="#fbbf24" stroke="#0f2544" stroke-width="2" />
+                <path d="M88,78 L70,78 L66,112 L66,142 L88,142 Z" fill="#fbbf24" stroke="#0f2544" stroke-width="2" />
+                <rect x="33" y="108" width="20" height="5" fill="#ffffff" />
+                <rect x="67" y="108" width="20" height="5" fill="#ffffff" />
+                <!-- Tie -->
+                <polygon points="60,78 56,86 60,112 64,86" fill="#0f2544" />
+                <!-- JAWIQUEST Name Tag -->
+                <rect x="69" y="88" width="17" height="9" rx="2" fill="#0f2544" />
+                <rect x="71" y="90" width="13" height="4" fill="#38bdf8" />
+                <!-- Left Arm holding Clipboard -->
+                <g id="kj-arm-left">
+                  <path d="M30,84 Q14,102 24,118" fill="none" stroke="#173663" stroke-width="11" stroke-linecap="round" />
+                  <rect x="10" y="104" width="22" height="28" rx="3" fill="#0f2544" stroke="#38bdf8" stroke-width="1.8" />
+                  <rect x="14" y="109" width="14" height="8" fill="#10b981" />
+                  <circle cx="26" cy="120" r="6.5" fill="#f1c29b" stroke="#0f2544" stroke-width="1.8" />
+                </g>
+                <!-- Right Arm (Animated Wave/Thumbs/Point) -->
+                <g id="kj-arm-right">
+                  <path d="M90,84 Q110,70 108,52" fill="none" stroke="#173663" stroke-width="11" stroke-linecap="round" />
+                  <circle cx="108" cy="48" r="7.5" fill="#f1c29b" stroke="#0f2544" stroke-width="1.8" />
+                </g>
+                <!-- Head Group -->
+                <g id="kj-head">
+                  <rect x="52" y="64" width="16" height="14" rx="5" fill="#f1c29b" />
+                  <circle cx="60" cy="44" r="25" fill="#f1c29b" stroke="#0f2544" stroke-width="2.5" />
+                  <!-- Eyes & Brows -->
+                  <circle cx="51" cy="43" r="3" fill="#0f2544" />
+                  <circle cx="69" cy="43" r="3" fill="#0f2544" />
+                  <circle cx="52" cy="42" r="1" fill="#ffffff" />
+                  <circle cx="70" cy="42" r="1" fill="#ffffff" />
+                  <path d="M46,36 Q51,33 56,36" fill="none" stroke="#0f2544" stroke-width="2.2" stroke-linecap="round" />
+                  <path d="M64,36 Q69,33 74,36" fill="none" stroke="#0f2544" stroke-width="2.2" stroke-linecap="round" />
+                  <!-- Smile -->
+                  <path id="kj-mouth" d="M51,53 Q60,61 69,53" fill="none" stroke="#0f2544" stroke-width="2.6" stroke-linecap="round" />
+                  <!-- Officer Cap -->
+                  <path d="M32,28 Q60,10 88,28 L83,35 L37,35 Z" fill="#0f2544" />
+                  <rect x="36" y="30" width="48" height="6" rx="2.5" fill="#f59e0b" />
+                  <circle cx="60" cy="22" r="4" fill="#fbbf24" />
+                </g>
+              </svg>
+            </div>
+
+            <div class="speech-bubble-card">
+              <span class="speech-speaker-tag">PEGAWAI BAGASI JAWI &bull; KAPTEN JAWI</span>
+              <p class="speech-text" id="kapten-speech-text">
+                “Selamat datang, Pegawai Jawi! Mari kita uruskan semua bagasi hari ini!”
+              </p>
+              <div class="audio-warning-banner" id="audio-warning-banner">
+                ⚠️ Suara Bahasa Melayu (ms-MY) tidak ditemui pada pelayar ini. Anda boleh merakam atau memuat naik audio melalui butang <strong>Audio Guru</strong>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback Overlay Card (Shown on Correct Delivery) -->
+          <div class="feedback-overlay-card" id="feedback-card">
+            <div style="display:flex; align-items:center; gap:8px; color:#047857; font-weight:800; font-size:1.1rem;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="#10b981"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              <span id="fb-title">PENGHANTARAN BERJAYA!</span>
+            </div>
+            <div class="feedback-word-reveal">
+              <span class="fb-jawi" id="fb-jawi-word">بري</span>
+              <span style="font-size:1.2rem; color:#64748b;">=</span>
+              <span class="fb-rumi" id="fb-rumi-word">Beri</span>
+              <span id="fb-badge-cat" style="background:#0f2544; color:#fbbf24; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:8px;">E-PEPET</span>
+            </div>
+            <p id="fb-explanation" style="font-size:0.92rem; font-weight:600; color:#334155; margin-bottom:12px; line-height:1.45;"></p>
+            <button class="btn btn-emerald" id="btn-next-bag" type="button">
+              Bagasi Seterusnya &rarr;
+            </button>
+          </div>
+
+          <!-- Conveyor Belt + Scanner Arch + Active Suitcase -->
+          <div class="conveyor-stage">
+            <div class="scanner-arch-wrap">
+              <!-- Scanner Arch Frame -->
+              <svg style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); pointer-events:none; z-index:2;" width="340" height="215" viewBox="0 0 340 215">
+                <path d="M22,215 L22,42 Q22,16 48,16 L292,16 Q318,16 318,42 L318,215" fill="none" stroke="#0f2544" stroke-width="18" />
+                <path d="M22,215 L22,42 Q22,16 48,16 L292,16 Q318,16 318,42 L318,215" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="14 8" />
+                <rect x="95" y="6" width="150" height="20" rx="6" fill="#0f2544" stroke="#f59e0b" stroke-width="2" />
+                <text x="170" y="20" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">JAWI SCANNER X-200</text>
+              </svg>
+
+              <!-- Laser Scan Beam -->
+              <div class="scanner-laser-beam" id="scanner-laser"></div>
+
+              <!-- Active Draggable Suitcase -->
+              <div id="active-suitcase" role="button" tabindex="0" aria-label="Bagasi aktif untuk diseret">
+                <div class="suitcase-visual-wrapper">
+                  <div id="suitcase-svg-slot"></div>
+                  <!-- Jawi Label Tag -->
+                  <div class="jawi-luggage-tag">
+                    <div class="tag-header-strip">
+                      <span class="bag-id-badge" id="bag-id-label">BG-01</span>
+                      <button type="button" class="tag-audio-btn" id="btn-play-word-audio" title="Dengar sebutan perkataan">
+                        🔊 Dengar
+                      </button>
+                    </div>
+                    <div class="jawi-word-display" id="bag-jawi-word" dir="rtl" lang="ms-Arab">بري</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conveyor Belt Machine -->
+            <div class="conveyor-machine">
+              <div class="conveyor-belt-track" id="conveyor-track"></div>
+              <div class="conveyor-rollers">
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+                <div class="roller-wheel"></div>
+              </div>
+            </div>
+
+            <div class="interaction-helper-bar" id="helper-hint-bar">
+              Seret bagasi ke <strong>Gate A (E-Pepet)</strong> atau <strong>Gate B (E-Taling)</strong> &bull; Atau klik bagasi kemudian klik pintu pelepasan
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT DROP ZONE: GATE B — PULAU E-TALING -->
+        <aside class="gate-zone gate-b" id="gate-b-zone" data-gate="e-taling" role="button" tabindex="0" aria-label="Gate B Pulau E-Taling">
+          <div class="gate-sign-board">
+            <div class="gate-code">GATE B</div>
+            <div class="gate-island">PULAU E-TALING</div>
+            <span class="gate-hint-pill">Penerbangan JQ102</span>
+          </div>
+
+          <div class="gate-illustration-wrap">
+            <!-- Detailed SVG Aircraft & Loading Trolley for Gate B -->
+            <svg width="205" height="175" viewBox="0 0 210 180">
+              <!-- Jet Bridge / Gate Tunnel -->
+              <rect x="158" y="25" width="52" height="36" rx="4" fill="#0f2544" stroke="#fbbf24" stroke-width="2.5" />
+              <rect x="148" y="31" width="18" height="24" fill="#334155" />
+              <!-- Sky Blue Tail Aircraft -->
+              <polygon points="148,56 166,18 142,18 118,56" fill="#0284c7" stroke="#0f2544" stroke-width="2.5" />
+              <rect x="16" y="48" width="136" height="34" rx="17" fill="#ffffff" stroke="#0f2544" stroke-width="3" />
+              <path d="M16,66 L152,66" stroke="#0284c7" stroke-width="5" />
+              <path d="M42,51 Q18,51 16,64 L42,64 Z" fill="#0f2544" />
+              <g fill="#0f2544">
+                <circle cx="59" cy="57" r="3" />
+                <circle cx="73" cy="57" r="3" />
+                <circle cx="87" cy="57" r="3" />
+                <circle cx="101" cy="57" r="3" />
+                <circle cx="115" cy="57" r="3" />
+              </g>
+              <polygon points="98,68 62,68 82,88 108,88" fill="#cbd5e1" stroke="#0f2544" stroke-width="2" />
+              <!-- Airport Baggage Trolley below plane -->
+              <g transform="translate(30, 108)">
+                <rect x="10" y="42" width="124" height="8" rx="4" fill="#0f2544" />
+                <line x1="18" y1="8" x2="18" y2="42" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+                <line x1="126" y1="8" x2="126" y2="42" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+                <circle cx="30" cy="56" r="9" fill="#0f2544" />
+                <circle cx="30" cy="56" r="4" fill="#38bdf8" />
+                <circle cx="114" cy="56" r="9" fill="#0f2544" />
+                <circle cx="114" cy="56" r="4" fill="#38bdf8" />
+                <!-- Dynamic Loaded Bags on Trolley -->
+                <g id="gate-b-trolley-bags"></g>
+              </g>
+            </svg>
+          </div>
+
+          <div class="gate-drop-target-box">
+            <div>Seret atau Klik di Sini untuk Hantar ke <strong>Gate B</strong></div>
+            <div class="gate-counter-badge">Dimuatkan: <span id="count-gate-b">0</span>/6 Bagasi</div>
+          </div>
+        </aside>
+      </main>
+    </section>
+
+    <!-- =====================================================================
+         SCREEN 3: SKRIN PENAMAT SINEMATIK & DIGITAL BOARDING PASS
+    ====================================================================== -->
+    <section id="finale-screen" class="screen">
+      <div class="finale-sky-stage">
+        <!-- Cinematic Takeoff Stage -->
+        <div class="takeoff-scene-box" id="takeoff-scene-box">
+          <div class="takeoff-banner" id="takeoff-stage-banner">
+            BABAK 1: PERSEDIAAN PELEPASAN &mdash; PINTU KARGO DITUTUP
+          </div>
+
+          <!-- Clouds & Control Tower -->
+          <svg width="100%" height="100%" viewBox="0 0 920 360" preserveAspectRatio="xMidYMid slice">
+            <g fill="#ffffff" opacity="0.88">
+              <ellipse cx="160" cy="65" rx="52" ry="18" />
+              <ellipse cx="480" cy="52" rx="64" ry="20" />
+              <ellipse cx="770" cy="76" rx="55" ry="18" />
+            </g>
+            <!-- Control Tower -->
+            <g transform="translate(80, 125)">
+              <rect x="20" y="34" width="22" height="82" fill="#e2e8f0" stroke="#0f2544" stroke-width="2.5" />
+              <polygon points="6,34 56,34 48,14 14,14" fill="#0f2544" />
+              <rect x="12" y="18" width="38" height="12" rx="3" fill="#38bdf8" />
+            </g>
+            <!-- Runway Markings -->
+            <line x1="0" y1="312" x2="920" y2="312" stroke="#f8fafc" stroke-width="4" stroke-dasharray="32 24" />
+            <rect x="24" y="280" width="52" height="6" fill="#ffffff" />
+            <rect x="24" y="294" width="52" height="6" fill="#ffffff" />
+            <rect x="24" y="324" width="52" height="6" fill="#ffffff" />
+            <rect x="24" y="338" width="52" height="6" fill="#ffffff" />
+          </svg>
+
+          <!-- Aircraft JQ101 (Pulau E-Pepet) -->
+          <div id="plane-jq101">
+            <svg width="210" height="82" viewBox="0 0 210 82">
+              <polygon points="36,42 14,8 38,8 66,42" fill="#10b981" stroke="#0f2544" stroke-width="2.5" />
+              <rect x="30" y="32" width="150" height="32" rx="16" fill="#ffffff" stroke="#0f2544" stroke-width="3" />
+              <line x1="30" y1="50" x2="180" y2="50" stroke="#10b981" stroke-width="5" />
+              <path d="M154,35 Q178,35 180,48 L154,48 Z" fill="#0f2544" />
+              <polygon points="88,52 132,52 108,72 78,72" fill="#94a3b8" stroke="#0f2544" stroke-width="2" />
+              <text x="95" y="45" fill="#0f2544" font-family="monospace" font-size="9" font-weight="bold">JQ101 E-PEPET</text>
+            </svg>
+          </div>
+
+          <!-- Aircraft JQ102 (Pulau E-Taling) -->
+          <div id="plane-jq102">
+            <svg width="210" height="82" viewBox="0 0 210 82">
+              <polygon points="36,42 14,8 38,8 66,42" fill="#0284c7" stroke="#0f2544" stroke-width="2.5" />
+              <rect x="30" y="32" width="150" height="32" rx="16" fill="#ffffff" stroke="#0f2544" stroke-width="3" />
+              <line x1="30" y1="50" x2="180" y2="50" stroke="#0284c7" stroke-width="5" />
+              <path d="M154,35 Q178,35 180,48 L154,48 Z" fill="#0f2544" />
+              <polygon points="88,52 132,52 108,72 78,72" fill="#94a3b8" stroke="#0f2544" stroke-width="2" />
+              <text x="92" y="45" fill="#0f2544" font-family="monospace" font-size="9" font-weight="bold">JQ102 E-TALING</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Final Large Digital Boarding Pass -->
+        <div class="final-boarding-pass-wrap" id="final-bp-wrap">
+          <div style="text-align:center; color:#ffffff; margin-bottom:10px;">
+            <h2 style="font-size:1.75rem; font-weight:800; text-shadow:0 3px 10px rgba(0,0,0,0.35);">
+              MISI BERJAYA! TAHNIAH, PEGAWAI BAGASI JAWI!
+            </h2>
+            <p style="font-size:0.95rem; font-weight:600; color:#e0f2fe;">
+              Kamu telah berjaya menghantar semua bagasi ke destinasi yang betul dan semakin mahir membezakan e-pepet dan e-taling!
+            </p>
+          </div>
+
+          <div class="digital-boarding-pass" id="printable-boarding-pass">
+            <!-- Left Ticket Body -->
+            <div class="bp-left-main">
+              <div class="bp-header">
+                <div class="bp-airline-title">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#fbbf24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                  <span>JAWIQUEST AIRLINES &bull; BOARDING PASS</span>
+                </div>
+                <span style="font-family:var(--font-mono); font-size:0.82rem; color:#fbbf24; font-weight:800;">FLIGHT: JQ202</span>
+              </div>
+
+              <div class="bp-body">
+                <div class="bp-route-row">
+                  <div>
+                    <div class="bp-airport-code">JQIA</div>
+                    <div class="bp-airport-name">JawiQuest International Airport</div>
+                  </div>
+                  <div style="text-align:center;">
+                    <svg width="36" height="22" viewBox="0 0 36 22" fill="#0f2544"><path d="M31 15v-2l-11-6V2.5c0-.8-.7-1.5-1.5-1.5S17 1.7 17 2.5V7L6 13v2l11-3v5.5L14 19v1.5l4.5-1 4.5 1V19l-3-1.5V12l11 3z"/></svg>
+                    <div style="font-size:0.65rem; font-weight:800; color:#0284c7;">MISI VOKAL JAWI</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="bp-airport-code">DVJ-02</div>
+                    <div class="bp-airport-name">Dunia Vokal Jawi</div>
+                  </div>
+                </div>
+
+                <div class="bp-info-grid">
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Nama Pegawai</div>
+                    <div class="bp-field-value" id="bp-final-name">PEGAWAI JAWI</div>
+                  </div>
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Markah Keseluruhan</div>
+                    <div class="bp-field-value" id="bp-final-score">120/120 (100%)</div>
+                  </div>
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Percubaan Pertama</div>
+                    <div class="bp-field-value" id="bp-final-first-try">12/12 (100%)</div>
+                  </div>
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Bagasi E-Pepet</div>
+                    <div class="bp-field-value" id="bp-final-pepet">6 / 6</div>
+                  </div>
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Bagasi E-Taling</div>
+                    <div class="bp-field-value" id="bp-final-taling">6 / 6</div>
+                  </div>
+                  <div class="bp-field-box">
+                    <div class="bp-field-label">Jumlah Bagasi</div>
+                    <div class="bp-field-value" id="bp-final-total">12 / 12</div>
+                  </div>
+                </div>
+
+                <div class="mission-stamp">MISSION COMPLETED</div>
+              </div>
+            </div>
+
+            <!-- Right Perforated Stub -->
+            <div class="bp-right-stub">
+              <div class="bp-stub-header">SIJIL PENGHARGAAN</div>
+              <div class="bp-stub-body">
+                <!-- Medal / Wings SVG -->
+                <svg width="56" height="44" viewBox="0 0 64 50">
+                  <path d="M4,18 L24,18 L28,28 L10,28 Z" fill="#0f2544" />
+                  <path d="M60,18 L40,18 L36,28 L54,28 Z" fill="#0f2544" />
+                  <circle cx="32" cy="24" r="14" fill="#f59e0b" stroke="#0f2544" stroke-width="3" />
+                  <polygon points="32,14 35,21 42,21 36,25 38,32 32,28 26,32 28,25 22,21 29,21" fill="#ffffff" />
+                </svg>
+                <div class="award-rank-badge">PEGAWAI BAGASI JAWI BERTAULIAH</div>
+                <div class="cleared-pill">CLEARED FOR TAKEOFF</div>
+                <!-- Decorative Barcode SVG -->
+                <svg width="160" height="32" viewBox="0 0 160 32" aria-label="Kod bar hiasan">
+                  <g fill="#0f2544">
+                    <rect x="4" y="2" width="3" height="24" />
+                    <rect x="10" y="2" width="1.5" height="24" />
+                    <rect x="15" y="2" width="4" height="24" />
+                    <rect x="22" y="2" width="2" height="24" />
+                    <rect x="28" y="2" width="5" height="24" />
+                    <rect x="37" y="2" width="1.5" height="24" />
+                    <rect x="42" y="2" width="3" height="24" />
+                    <rect x="49" y="2" width="2" height="24" />
+                    <rect x="55" y="2" width="4" height="24" />
+                    <rect x="63" y="2" width="1.5" height="24" />
+                    <rect x="68" y="2" width="3.5" height="24" />
+                    <rect x="76" y="2" width="2" height="24" />
+                    <rect x="82" y="2" width="5" height="24" />
+                    <rect x="91" y="2" width="1.5" height="24" />
+                    <rect x="96" y="2" width="3" height="24" />
+                    <rect x="103" y="2" width="4" height="24" />
+                    <rect x="111" y="2" width="2" height="24" />
+                    <rect x="117" y="2" width="3" height="24" />
+                    <rect x="124" y="2" width="1.5" height="24" />
+                    <rect x="130" y="2" width="4.5" height="24" />
+                    <rect x="138" y="2" width="2" height="24" />
+                    <rect x="144" y="2" width="3" height="24" />
+                    <rect x="151" y="2" width="3" height="24" />
+                  </g>
+                  <text x="80" y="31" font-family="monospace" font-size="7" fill="#0f2544" text-anchor="middle">JQ202-2026-VOKAL-JAWI</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="finale-buttons-bar">
+            <button class="btn btn-primary" id="btn-print-bp" type="button">
+              🖨️ CETAK BOARDING PASS
+            </button>
+            <button class="btn btn-emerald" id="btn-save-bp-img" type="button">
+              🖼️ SIMPAN BOARDING PASS SEBAGAI GAMBAR
+            </button>
+            <button class="btn btn-secondary" id="btn-play-again" type="button">
+              🔄 MAIN SEMULA
+            </button>
+            <button class="btn btn-outline-light" style="background:#0f2544;" id="btn-finale-menu" type="button">
+              🏠 KEMBALI KE MENU UTAMA
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MODAL 1: KAD PENGENALAN PEGAWAI BAGASI JAWI
+    ====================================================================== -->
+    <div class="modal-backdrop" id="modal-officer-id">
+      <div class="modal-card" style="max-width:540px;">
+        <div class="modal-header">
+          <h2>🪪 KAD PENGENALAN PEGAWAI BAGASI JAWI</h2>
+          <button class="modal-close-btn" data-close-modal="modal-officer-id" type="button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="id-card-preview">
+            <div class="id-photo-box">
+              <svg width="76" height="90" viewBox="0 0 100 115">
+                <circle cx="50" cy="48" r="24" fill="#f1c29b" stroke="#0f2544" stroke-width="3" />
+                <path d="M22,32 Q50,14 78,32 L72,38 L28,38 Z" fill="#0f2544" />
+                <rect x="26" y="33" width="48" height="6" rx="2" fill="#f59e0b" />
+                <circle cx="42" cy="47" r="3" fill="#0f2544" />
+                <circle cx="58" cy="47" r="3" fill="#0f2544" />
+                <path d="M41,57 Q50,65 59,57" fill="none" stroke="#0f2544" stroke-width="3" stroke-linecap="round" />
+                <rect x="24" y="76" width="52" height="38" rx="10" fill="#fbbf24" stroke="#0f2544" stroke-width="3" />
+              </svg>
+            </div>
+            <div>
+              <div style="font-size:0.72rem; font-weight:800; color:#fbbf24; letter-spacing:0.08em;">JAWIQUEST INTERNATIONAL AIRPORT</div>
+              <div style="font-size:1.15rem; font-weight:800; margin:4px 0;" id="preview-officer-name">PEGAWAI BAGASI JAWI</div>
+              <div style="font-family:var(--font-mono); font-size:0.78rem; color:#bae6fd;">
+                FLIGHT: JQ202 &bull; SEAT: 02A<br/>
+                STATUS: WAITING FOR BAGGAGE
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-player-name">Masukkan Nama Pegawai (Untuk Boarding Pass &amp; Sijil):</label>
+            <input type="text" id="input-player-name" class="form-input" placeholder="Contoh: Nur Amani / Ahmad Daniel" maxlength="28" />
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+            <button class="btn btn-secondary" data-close-modal="modal-officer-id" type="button">Batal</button>
+            <button class="btn btn-primary" id="btn-confirm-officer" type="button">Sahkan &amp; Masuk Terminal &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 2: ARAHAN & DEMONSTRASI INTERAKTIF RINGKAS
+    ====================================================================== -->
+    <div class="modal-backdrop" id="modal-how-to">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>📋 PANDUAN TUGAS PEGAWAI BAGASI &amp; DEMONSTRASI</h2>
+          <button class="modal-close-btn" data-close-modal="modal-how-to" type="button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="background:#fef3c7; border:2px solid #f59e0b; border-radius:14px; padding:12px 16px; margin-bottom:14px; font-weight:700; color:#0f2544;">
+            <strong>Kapten Jawi:</strong> “Selamat datang, Pegawai Bagasi Jawi! Semua bagasi perlu dihantar ke destinasi yang betul. Baca perkataan Jawi pada label bagasi, kenal pasti bunyi vokalnya dan seret bagasi ke pintu pelepasan yang sepadan.”
+          </div>
+
+          <div class="steps-grid">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div><strong>Baca Perkataan Jawi</strong><br/><span style="font-size:0.84rem; color:#475569;">Lihat ejaan Jawi pada label bagasi dan tekan ikon pembesar suara untuk mendengar sebutannya.</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div><strong>Kenal Pasti Jenis Vokal</strong><br/><span style="font-size:0.84rem; color:#475569;">Bezakan bunyi <strong>e-pepet</strong> (seperti <em>emak</em>) dengan <strong>e-taling</strong> (seperti <em>enak</em>).</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div><strong>Seret ke Pintu Pelepasan</strong><br/><span style="font-size:0.84rem; color:#475569;">Seret bagasi ke <strong>Gate A (E-Pepet)</strong> atau <strong>Gate B (E-Taling)</strong>, atau klik bagasi lalu klik pintu.</span></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div><strong>Kumpul Markah Boarding Pass</strong><br/><span style="font-size:0.84rem; color:#475569;">Percubaan pertama: <strong>+10 mata</strong>. Percubaan semula: <strong>+5 mata</strong>. Tiada had masa!</span></div>
+            </div>
+          </div>
+
+          <!-- Animated Mini Demonstration -->
+          <div class="demo-box">
+            <div style="font-size:0.78rem; font-weight:800; color:#0f2544; margin-bottom:6px; text-transform:uppercase;">
+              Demonstrasi Cara Menyeret Bagasi (Contoh: Perkataan <span style="font-family:var(--font-jawi); font-size:1.15rem;">امق</span> = emak &rarr; E-Pepet)
+            </div>
+            <div class="demo-stage">
+              <div class="demo-gate-a lit">GATE A<br/>PULAU E-PEPET</div>
+              <div class="demo-bag" dir="rtl">امق</div>
+              <div style="background:#0284c7; color:#fff; padding:12px 14px; border-radius:12px; font-weight:800; font-size:0.82rem; text-align:center; opacity:0.75;">
+                GATE B<br/>PULAU E-TALING
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+            <button class="btn btn-primary" id="btn-close-demo-start" type="button">SAYA FAHAM, MULA BERTUGAS!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 3: PANEL TETAPAN AUDIO & RAKAMAN GURU (INDEXEDDB)
+    ====================================================================== -->
+    <div class="modal-backdrop" id="modal-teacher-audio">
+      <div class="modal-card" style="max-width:840px;">
+        <div class="modal-header">
+          <h2>🎙️ PANEL KAWALAN AUDIO &amp; RAKAMAN SEBUTAN GURU</h2>
+          <button class="modal-close-btn" data-close-modal="modal-teacher-audio" type="button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- 3 Independent Volume Controls -->
+          <div class="volume-sliders-grid">
+            <div class="vol-control">
+              <label for="vol-voice"><span>Audio Sebutan (Keutamaan)</span><span id="vol-voice-val">100%</span></label>
+              <input type="range" id="vol-voice" min="0" max="100" value="100" />
+            </div>
+            <div class="vol-control">
+              <label for="vol-ambient"><span>Mesin &amp; Persekitaran</span><span id="vol-ambient-val">45%</span></label>
+              <input type="range" id="vol-ambient" min="0" max="100" value="45" />
+            </div>
+            <div class="vol-control">
+              <label for="vol-sfx"><span>Kesan Bunyi Permainan</span><span id="vol-sfx-val">75%</span></label>
+              <input type="range" id="vol-sfx" min="0" max="100" value="75" />
+            </div>
+          </div>
+
+          <!-- Voice Status & Export/Import Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#e0f2fe; border:2px solid #0284c7; border-radius:12px; padding:10px 14px; margin-bottom:14px;">
+            <div style="font-size:0.84rem; font-weight:700; color:#0f2544;">
+              Status Suara Sistem: <span id="system-voice-status" style="color:#0369a1;">Menyemak suara ms-MY...</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" id="btn-export-audio-pack" type="button">
+                ⬇️ Eksport Rakaman (.json)
+              </button>
+              <label class="btn btn-emerald" style="padding:6px 12px; font-size:0.8rem; margin:0; cursor:pointer;">
+                ⬆️ Import Rakaman
+                <input type="file" id="input-import-audio-pack" accept=".json" style="display:none;" />
+              </label>
+            </div>
+          </div>
+
+          <p style="font-size:0.82rem; color:#475569; margin-bottom:10px; font-weight:600;">
+            Guru boleh merakam sebutan menggunakan mikrofon atau memuat naik fail audio (<strong>MP3 / WAV</strong>) bagi setiap perkataan. Semua rakaman disimpan secara kekal dalam pelayar ini (<em>IndexedDB</em>).
+          </p>
+
+          <div style="max-height:310px; overflow-y:auto; border:2px solid #cbd5e1; border-radius:12px;">
+            <table class="teacher-word-table">
+              <thead>
+                <tr>
+                  <th>Kategori</th>
+                  <th>Jawi</th>
+                  <th>Rumi</th>
+                  <th>Sumber Audio</th>
+                  <th>Tindakan Guru</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-word-tbody"></tbody>
+            </table>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+            <button class="btn btn-primary" data-close-modal="modal-teacher-audio" type="button">Selesai &amp; Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT: AUDIO ENGINE, INDEXEDDB STORAGE, GAME LOGIC & BOARDING PASS
+  ========================================================================== -->
+  <script>
+    (() => {
+      'use strict';
+
+      /* =====================================================================
+         1. BANK SOALAN (12 PERKATAAN SAHIH EJAAN JAWI DBP)
+      ====================================================================== */
+      const QUESTION_BANK = [
+        // 6 Perkataan Vokal E-Pepet
+        {
+          id: 'beri',
+          rumi: 'Beri',
+          jawi: 'بري',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Beri" (بري) mempunyai bunyi e-pepet yang pendek pada suku kata pertama (be-ri). Dalam ejaan Jawi, e-pepet di tengah perkataan tidak menggunakan huruf Ya (ي).'
+        },
+        {
+          id: 'ketawa',
+          rumi: 'Ketawa',
+          jawi: 'كتاوا',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Ketawa" (كتاوا) mengandungi bunyi e-pepet pada suku kata pertama (ke-ta-wa). Huruf Kaf (ك) tidak diikuti huruf Ya.'
+        },
+        {
+          id: 'lemak',
+          rumi: 'Lemak',
+          jawi: 'لمق',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Lemak" (لمق) berbunyi e-pepet pada suku kata pertama (le-mak), sama seperti bunyi dalam perkataan "emak".'
+        },
+        {
+          id: 'kekal',
+          rumi: 'Kekal',
+          jawi: 'ككل',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Kekal" (ككل) menggunakan bunyi e-pepet pada suku kata pertama (ke-kal).'
+        },
+        {
+          id: 'besar',
+          rumi: 'Besar',
+          jawi: 'بسر',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Besar" (بسر) mempunyai bunyi e-pepet pada suku kata pertama (be-sar).'
+        },
+        {
+          id: 'tebal',
+          rumi: 'Tebal',
+          jawi: 'تبل',
+          category: 'e-pepet',
+          gate: 'Gate A',
+          explanation: 'Perkataan "Tebal" (تبل) berbunyi e-pepet yang pendek pada suku kata pertama (te-bal).'
+        },
+
+        // 6 Perkataan Vokal E-Taling
+        {
+          id: 'sewa',
+          rumi: 'Sewa',
+          jawi: 'سيوا',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Sewa" (سيوا) mempunyai bunyi e-taling yang jelas pada suku kata pertama (se-wa) dan dieja menggunakan huruf Ya (ي).'
+        },
+        {
+          id: 'belon',
+          rumi: 'Belon',
+          jawi: 'بيلون',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Belon" (بيلون) mengandungi bunyi e-taling pada suku kata pertama (be-lon) dengan huruf Ya (ي).'
+        },
+        {
+          id: 'meja',
+          rumi: 'Meja',
+          jawi: 'ميجا',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Meja" (ميجا) berbunyi e-taling pada suku kata pertama (me-ja) dan menggunakan huruf Ya (ي).'
+        },
+        {
+          id: 'merah',
+          rumi: 'Merah',
+          jawi: 'ميره',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Merah" (ميره) mempunyai bunyi e-taling yang terang pada suku kata pertama (me-rah) dengan huruf Ya (ي).'
+        },
+        {
+          id: 'esok',
+          rumi: 'Esok',
+          jawi: 'ايسوق',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Esok" (ايسوق) bermula dengan bunyi e-taling (e-sok) dan dieja menggunakan huruf Alif-Ya (اي) di awal kata.'
+        },
+        {
+          id: 'elok',
+          rumi: 'Elok',
+          jawi: 'ايلوق',
+          category: 'e-taling',
+          gate: 'Gate B',
+          explanation: 'Perkataan "Elok" (ايلوق) bermula dengan bunyi e-taling (e-lok) menggunakan huruf Alif-Ya (اي).'
+        }
+      ];
+
+      /* =====================================================================
+         2. SUITCASE SVG GENERATOR (6 DESIGNS x RANDOMIZED PALETTES)
+      ====================================================================== */
+      const SUITCASE_PALETTES = [
+        { body: '#ef4444', trim: '#991b1b', accent: '#fde047' }, // Crimson
+        { body: '#8b5cf6', trim: '#5b21b6', accent: '#fef08a' }, // Purple
+        { body: '#f97316', trim: '#9a3412', accent: '#ffffff' }, // Orange
+        { body: '#06b6d4', trim: '#155e75', accent: '#fde047' }, // Cyan
+        { body: '#ec4899', trim: '#9d174d', accent: '#ffffff' }, // Magenta
+        { body: '#14b8a6', trim: '#115e59', accent: '#fef08a' }, // Teal
+        { body: '#6366f1', trim: '#3730a3', accent: '#fde047' }, // Indigo
+        { body: '#eab308', trim: '#854d0e', accent: '#0f2544' }  // Gold
+      ];
+
+      function generateSuitcaseSVG(variantIndex, palette) {
+        const v = variantIndex % 6;
+        const { body, trim, accent } = palette;
+        let detailLines = '';
+        if (v === 0) {
+          detailLines = `
+            <line x1="65" y1="46" x2="65" y2="152" stroke="${trim}" stroke-width="5" />
+            <line x1="200" y1="46" x2="200" y2="152" stroke="${trim}" stroke-width="5" />
+          `;
+        } else if (v === 1) {
+          detailLines = `
+            <rect x="44" y="46" width="16" height="16" rx="3" fill="${accent}" stroke="#0f2544" stroke-width="2" />
+            <rect x="205" y="46" width="16" height="16" rx="3" fill="${accent}" stroke="#0f2544" stroke-width="2" />
+            <rect x="44" y="136" width="16" height="16" rx="3" fill="${accent}" stroke="#0f2544" stroke-width="2" />
+            <rect x="205" y="136" width="16" height="16" rx="3" fill="${accent}" stroke="#0f2544" stroke-width="2" />
+          `;
+        } else if (v === 2) {
+          detailLines = `
+            <line x1="46" y1="68" x2="219" y2="68" stroke="${accent}" stroke-width="4" stroke-dasharray="10 6" />
+            <line x1="46" y1="132" x2="219" y2="132" stroke="${accent}" stroke-width="4" stroke-dasharray="10 6" />
+          `;
+        } else if (v === 3) {
+          detailLines = `
+            <rect x="52" y="54" width="161" height="90" rx="10" fill="none" stroke="${accent}" stroke-width="3" />
+          `;
+        } else if (v === 4) {
+          detailLines = `
+            <polygon points="44,46 80,46 44,82" fill="${accent}" opacity="0.85" />
+            <polygon points="221,152 185,152 221,116" fill="${accent}" opacity="0.85" />
+          `;
+        } else {
+          detailLines = `
+            <line x1="80" y1="46" x2="80" y2="152" stroke="${accent}" stroke-width="3.5" />
+            <line x1="185" y1="46" x2="185" y2="152" stroke="${accent}" stroke-width="3.5" />
+          `;
+        }
+
+        return `
+          <svg width="265" height="172" viewBox="0 0 265 172" aria-hidden="true">
+            <!-- Telescopic Handle -->
+            <path d="M104,46 L104,16 Q104,10 112,10 L153,10 Q161,10 161,16 L161,46" fill="none" stroke="#0f2544" stroke-width="7" />
+            <rect x="112" y="6" width="41" height="10" rx="5" fill="#fbbf24" stroke="#0f2544" stroke-width="2.5" />
+            <!-- Wheels -->
+            <circle cx="72" cy="158" r="10" fill="#0f2544" />
+            <circle cx="72" cy="158" r="4" fill="#94a3b8" />
+            <circle cx="193" cy="158" r="10" fill="#0f2544" />
+            <circle cx="193" cy="158" r="4" fill="#94a3b8" />
+            <!-- Main Suitcase Shell -->
+            <rect x="42" y="44" width="181" height="110" rx="18" fill="${body}" stroke="#0f2544" stroke-width="4" />
+            ${detailLines}
+            <!-- Top Luggage Tag String -->
+            <path d="M161,32 Q178,34 174,52" fill="none" stroke="#0f2544" stroke-width="2.5" />
+          </svg>
+        `;
+      }
+
+      /* =====================================================================
+         3. INDEXEDDB STORAGE FOR TEACHER RECORDINGS (PERSISTENT AUDIO)
+      ====================================================================== */
+      class TeacherAudioDB {
+        constructor() {
+          this.dbName = 'JawiQuestAudioDB_v1';
+          this.storeName = 'wordRecordings';
+          this.db = null;
+          this.cache = new Map(); // id -> dataURL
+        }
+
+        async init() {
+          if (!('indexedDB' in window)) return;
+          return new Promise((resolve) => {
+            const req = indexedDB.open(this.dbName, 1);
+            req.onupgradeneeded = (e) => {
+              const db = e.target.result;
+              if (!db.objectStoreNames.contains(this.storeName)) {
+                db.createObjectStore(this.storeName, { keyPath: 'id' });
+              }
+            };
+            req.onsuccess = async (e) => {
+              this.db = e.target.result;
+              await this.loadAllToCache();
+              resolve();
+            };
+            req.onerror = () => resolve();
+          });
+        }
+
+        async loadAllToCache() {
+          if (!this.db) return;
+          return new Promise((resolve) => {
+            const tx = this.db.transaction(this.storeName, 'readonly');
+            const store = tx.objectStore(this.storeName);
+            const req = store.getAll();
+            req.onsuccess = () => {
+              this.cache.clear();
+              (req.result || []).forEach((item) => {
+                if (item && item.id && item.dataUrl) {
+                  this.cache.set(item.id, item.dataUrl);
+                }
+              });
+              resolve();
+            };
+            req.onerror = () => resolve();
+          });
+        }
+
+        async saveRecording(id, dataUrl) {
+          this.cache.set(id, dataUrl);
+          if (!this.db) return;
+          return new Promise((resolve) => {
+            const tx = this.db.transaction(this.storeName, 'readwrite');
+            tx.objectStore(this.storeName).put({ id, dataUrl, updatedAt: Date.now() });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          });
+        }
+
+        async deleteRecording(id) {
+          this.cache.delete(id);
+          if (!this.db) return;
+          return new Promise((resolve) => {
+            const tx = this.db.transaction(this.storeName, 'readwrite');
+            tx.objectStore(this.storeName).delete(id);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          });
+        }
+
+        getRecording(id) {
+          return this.cache.get(id) || null;
+        }
+
+        exportAllJSON() {
+          const obj = {};
+          this.cache.forEach((val, key) => {
+            obj[key] = val;
+          });
+          return JSON.stringify({ app: 'JawiQuest-MisiBagasiVokal', recordings: obj });
+        }
+
+        async importAllJSON(jsonStr) {
+          const parsed = JSON.parse(jsonStr);
+          const recs = parsed.recordings || parsed;
+          for (const [id, dataUrl] of Object.entries(recs)) {
+            if (typeof dataUrl === 'string' && dataUrl.startsWith('data:audio')) {
+              await this.saveRecording(id, dataUrl);
+            }
+          }
+        }
+      }
+
+      /* =====================================================================
+         4. AIRPORT AUDIO MANAGER (LAYERED WEB AUDIO + MS-MY VOICE + DUCKING)
+      ====================================================================== */
+      class AirportAudioManager {
+        constructor(teacherDB) {
+          this.teacherDB = teacherDB;
+          this.ctx = null;
+          this.muted = false;
+          this.volumes = {
+            voice: 1.0,
+            ambient: 0.45,
+            sfx: 0.75
+          };
+
+          // Master & Category Gain Nodes
+          this.masterGain = null;
+          this.ambientGain = null;
+          this.sfxGain = null;
+
+          // Active Continuous Loops
+          this.terminalLoopNodes = null;
+          this.beltLoopNodes = null;
+          this.beltRunning = false;
+
+          // Speech Synthesis & HTML5 Audio
+          this.msVoice = null;
+          this.msVoiceAvailable = false;
+          this.currentAudioEl = null;
+          this.isSpeaking = false;
+
+          this._initSpeechVoices();
+        }
+
+        _initSpeechVoices() {
+          if (!('speechSynthesis' in window)) return;
+          const pickVoice = () => {
+            const voices = window.speechSynthesis.getVoices() || [];
+            // Strictly look for Malaysian Malay (ms-MY or ms), NEVER id-ID (Indonesian)
+            const exactMY = voices.find((v) => v.lang && v.lang.toLowerCase() === 'ms-my');
+            const genericMS = voices.find(
+              (v) => v.lang && v.lang.toLowerCase().startsWith('ms') && !v.lang.toLowerCase().includes('id')
+            );
+            this.msVoice = exactMY || genericMS || null;
+            this.msVoiceAvailable = Boolean(this.msVoice);
+            this._updateVoiceStatusUI();
+          };
+          pickVoice();
+          window.speechSynthesis.onvoiceschanged = pickVoice;
+        }
+
+        _updateVoiceStatusUI() {
+          const statusEl = document.getElementById('system-voice-status');
+          if (statusEl) {
+            if (this.msVoiceAvailable) {
+              statusEl.textContent = `Tersedia (${this.msVoice.name} - ${this.msVoice.lang})`;
+              statusEl.style.color = '#047857';
+            } else {
+              statusEl.textContent = 'Tiada suara ms-MY terbina (Gunakan Rakaman Guru di bawah)';
+              statusEl.style.color = '#b45309';
+            }
+          }
+        }
+
+        ensureContext() {
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return false;
+            this.ctx = new AudioCtx();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.value = this.muted ? 0 : 1;
+            this.masterGain.connect(this.ctx.destination);
+
+            this.ambientGain = this.ctx.createGain();
+            this.ambientGain.gain.value = this.volumes.ambient;
+            this.ambientGain.connect(this.masterGain);
+
+            this.sfxGain = this.ctx.createGain();
+            this.sfxGain.gain.value = this.volumes.sfx;
+            this.sfxGain.connect(this.masterGain);
+          }
+          if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+          }
+          return true;
+        }
+
+        setMuted(muteState) {
+          this.muted = muteState;
+          if (this.masterGain && this.ctx) {
+            this.masterGain.gain.setTargetAtTime(this.muted ? 0 : 1, this.ctx.currentTime, 0.03);
+          }
+          if (this.muted) {
+            this.stopPronunciation();
+          }
+        }
+
+        setCategoryVolume(category, val0to1) {
+          this.volumes[category] = val0to1;
+          if (!this.ctx) return;
+          if (category === 'ambient' && this.ambientGain) {
+            const target = this.isSpeaking ? val0to1 * 0.12 : val0to1;
+            this.ambientGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.05);
+          }
+          if (category === 'sfx' && this.sfxGain) {
+            const target = this.isSpeaking ? val0to1 * 0.25 : val0to1;
+            this.sfxGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.05);
+          }
+          if (category === 'voice' && this.currentAudioEl) {
+            this.currentAudioEl.volume = val0to1;
+          }
+        }
+
+        /* Duck background audio when pronunciation plays */
+        _setDucking(active) {
+          this.isSpeaking = active;
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          if (this.ambientGain) {
+            this.ambientGain.gain.setTargetAtTime(
+              active ? this.volumes.ambient * 0.08 : this.volumes.ambient,
+              now,
+              0.06
+            );
+          }
+          if (this.sfxGain) {
+            this.sfxGain.gain.setTargetAtTime(
+              active ? this.volumes.sfx * 0.2 : this.volumes.sfx,
+              now,
+              0.06
+            );
+          }
+        }
+
+        /* Create reusable filtered noise buffer */
+        _createNoiseBuffer(seconds = 2) {
+          const sampleRate = this.ctx.sampleRate;
+          const length = sampleRate * seconds;
+          const buffer = this.ctx.createBuffer(1, length, sampleRate);
+          const data = buffer.getChannelData(0);
+          let lastOut = 0;
+          for (let i = 0; i < length; i++) {
+            const white = Math.random() * 2 - 1;
+            data[i] = (lastOut + 0.04 * white) / 1.04;
+            lastOut = data[i];
+            data[i] *= 2.5;
+          }
+          return buffer;
+        }
+
+        /* Soft Airport Terminal Hall Ambience */
+        startTerminalAmbience() {
+          if (!this.ensureContext() || this.terminalLoopNodes) return;
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = this._createNoiseBuffer(3);
+          noise.loop = true;
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 175;
+
+          const gain = this.ctx.createGain();
+          gain.gain.value = 0.09;
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ambientGain);
+          noise.start();
+          this.terminalLoopNodes = { noise, gain };
+        }
+
+        stopTerminalAmbience() {
+          if (this.terminalLoopNodes) {
+            try { this.terminalLoopNodes.noise.stop(); } catch (_) {}
+            this.terminalLoopNodes = null;
+          }
+        }
+
+        /* Layered Conveyor Belt Motor & Mechanical Rollers (Synced with Belt Animation) */
+        startBeltMotor() {
+          if (!this.ensureContext() || this.beltRunning) return;
+          this.beltRunning = true;
+          const now = this.ctx.currentTime;
+
+          // Layer 1: Electric Motor Hum (56Hz + 112Hz)
+          const motorOsc = this.ctx.createOscillator();
+          motorOsc.type = 'sawtooth';
+          motorOsc.frequency.setValueAtTime(56, now);
+
+          const motorFilter = this.ctx.createBiquadFilter();
+          motorFilter.type = 'lowpass';
+          motorFilter.frequency.setValueAtTime(145, now);
+
+          const motorGain = this.ctx.createGain();
+          motorGain.gain.setValueAtTime(0.001, now);
+          motorGain.gain.linearRampToValueAtTime(0.16, now + 0.12);
+
+          motorOsc.connect(motorFilter);
+          motorFilter.connect(motorGain);
+          motorGain.connect(this.ambientGain);
+          motorOsc.start(now);
+
+          // Layer 2: Mechanical Belt Rollers (Rhythmic Bandpass Noise)
+          const rollerNoise = this.ctx.createBufferSource();
+          rollerNoise.buffer = this._createNoiseBuffer(2);
+          rollerNoise.loop = true;
+
+          const rollerFilter = this.ctx.createBiquadFilter();
+          rollerFilter.type = 'bandpass';
+          rollerFilter.frequency.setValueAtTime(260, now);
+          rollerFilter.Q.setValueAtTime(1.8, now);
+
+          const rollerGain = this.ctx.createGain();
+          rollerGain.gain.setValueAtTime(0.001, now);
+          rollerGain.gain.linearRampToValueAtTime(0.14, now + 0.12);
+
+          // LFO modulating roller gain for wheel rotation texture
+          const lfo = this.ctx.createOscillator();
+          lfo.frequency.setValueAtTime(7.5, now);
+          const lfoDepth = this.ctx.createGain();
+          lfoDepth.gain.setValueAtTime(0.05, now);
+          lfo.connect(lfoDepth);
+          lfoDepth.connect(rollerGain.gain);
+          lfo.start(now);
+
+          rollerNoise.connect(rollerFilter);
+          rollerFilter.connect(rollerGain);
+          rollerGain.connect(this.ambientGain);
+          rollerNoise.start(now);
+
+          this.beltLoopNodes = { motorOsc, rollerNoise, lfo, motorGain, rollerGain };
+        }
+
+        stopBeltMotor() {
+          if (!this.beltRunning || !this.beltLoopNodes) return;
+          this.beltRunning = false;
+          const nodes = this.beltLoopNodes;
+          this.beltLoopNodes = null;
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          try {
+            nodes.motorGain.gain.setTargetAtTime(0.0001, now, 0.04);
+            nodes.rollerGain.gain.setTargetAtTime(0.0001, now, 0.04);
+            setTimeout(() => {
+              try {
+                nodes.motorOsc.stop();
+                nodes.rollerNoise.stop();
+                nodes.lfo.stop();
+              } catch (_) {}
+            }, 140);
+          } catch (_) {}
+        }
+
+        stopAllSounds() {
+          this.stopBeltMotor();
+          this.stopTerminalAmbience();
+          this.stopPronunciation();
+        }
+
+        /* SFX 1: Suitcase Thud onto Conveyor Belt */
+        playSuitcaseDrop() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(125, now);
+          osc.frequency.exponentialRampToValueAtTime(42, now + 0.16);
+
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.32, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+          osc.connect(gain);
+          gain.connect(this.sfxGain);
+          osc.start(now);
+          osc.stop(now + 0.19);
+        }
+
+        /* SFX 2: Baggage Barcode / X-Ray Scanner Sweep */
+        playScannerSweep() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1280, now);
+          osc.frequency.exponentialRampToValueAtTime(1920, now + 0.14);
+          osc.frequency.exponentialRampToValueAtTime(1640, now + 0.26);
+
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.11, now + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+          osc.connect(gain);
+          gain.connect(this.sfxGain);
+          osc.start(now);
+          osc.stop(now + 0.29);
+        }
+
+        /* SFX 3: Suitcase Delivered into Gate Chute + Positive Chime */
+        playGateDeliverySuccess() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+
+          // Pneumatic Chute Slide Noise
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = this._createNoiseBuffer(0.4);
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(320, now);
+          filter.frequency.exponentialRampToValueAtTime(780, now + 0.25);
+          const nGain = this.ctx.createGain();
+          nGain.gain.setValueAtTime(0.18, now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(this.sfxGain);
+          noise.start(now);
+
+          // Uplifting Harmonic Chime (C5 - E5 - G5 - C6)
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const t = now + 0.08 + idx * 0.075;
+            const osc = this.ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, t);
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(0.22, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.36);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.38);
+          });
+        }
+
+        /* SFX 4: Gentle Retry Bounce (Non-scary encouraging sound) */
+        playGentleRetry() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const freqs = [392.0, 329.63]; // G4 -> E4 soft marimba tap
+          freqs.forEach((f, i) => {
+            const t = now + i * 0.13;
+            const osc = this.ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, t);
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.18, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.24);
+          });
+        }
+
+        /* SFX 5: Airport PA Chime (Ding-Dong) */
+        playAirportPAChime() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const tones = [783.99, 622.25]; // G5 -> Eb5
+          tones.forEach((freq, i) => {
+            const t = now + i * 0.38;
+            const osc = this.ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, t);
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(0.26, t + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.75);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.78);
+          });
+        }
+
+        /* SFX 6: Cargo Door Hydraulic Close + Metallic Latch */
+        playCargoDoorClose() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          // Hydraulic servo whir
+          const osc = this.ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.linearRampToValueAtTime(165, now + 0.65);
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(280, now);
+
+          const g = this.ctx.createGain();
+          g.gain.setValueAtTime(0.16, now);
+          g.gain.linearRampToValueAtTime(0.001, now + 0.72);
+
+          osc.connect(filter);
+          filter.connect(g);
+          g.connect(this.sfxGain);
+          osc.start(now);
+          osc.stop(now + 0.74);
+
+          // Heavy Metallic Clunk at 0.7s
+          const clunk = this.ctx.createOscillator();
+          clunk.type = 'triangle';
+          clunk.frequency.setValueAtTime(95, now + 0.7);
+          clunk.frequency.exponentialRampToValueAtTime(34, now + 0.92);
+          const cg = this.ctx.createGain();
+          cg.gain.setValueAtTime(0.38, now + 0.7);
+          cg.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
+          clunk.connect(cg);
+          cg.connect(this.sfxGain);
+          clunk.start(now + 0.7);
+          clunk.stop(now + 0.96);
+        }
+
+        /* SFX 7: Realistic Layered Jet Engine Taxi & Takeoff Sequence */
+        playJetEngineSequence() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const duration = 5.4;
+
+          // Broadband Jet Thrust Noise
+          const jetNoise = this.ctx.createBufferSource();
+          jetNoise.buffer = this._createNoiseBuffer(6);
+
+          const jetFilter = this.ctx.createBiquadFilter();
+          jetFilter.type = 'bandpass';
+          jetFilter.Q.setValueAtTime(0.9, now);
+          jetFilter.frequency.setValueAtTime(160, now);
+          jetFilter.frequency.linearRampToValueAtTime(380, now + 2.0); // Taxi spool-up
+          jetFilter.frequency.exponentialRampToValueAtTime(1250, now + 3.6); // Full thrust takeoff
+          jetFilter.frequency.exponentialRampToValueAtTime(320, now + duration); // Flying away
+
+          const jetGain = this.ctx.createGain();
+          jetGain.gain.setValueAtTime(0.01, now);
+          jetGain.gain.linearRampToValueAtTime(0.22, now + 1.8);
+          jetGain.gain.linearRampToValueAtTime(0.45, now + 3.4);
+          jetGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+          // High-Bypass Turbine Whine Harmonic
+          const turbineOsc = this.ctx.createOscillator();
+          turbineOsc.type = 'sine';
+          turbineOsc.frequency.setValueAtTime(620, now);
+          turbineOsc.frequency.linearRampToValueAtTime(1150, now + 2.0);
+          turbineOsc.frequency.exponentialRampToValueAtTime(2150, now + 3.5);
+          turbineOsc.frequency.exponentialRampToValueAtTime(980, now + duration);
+
+          const turbineGain = this.ctx.createGain();
+          turbineGain.gain.setValueAtTime(0.001, now);
+          turbineGain.gain.linearRampToValueAtTime(0.06, now + 2.2);
+          turbineGain.gain.linearRampToValueAtTime(0.09, now + 3.4);
+          turbineGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+          jetNoise.connect(jetFilter);
+          jetFilter.connect(jetGain);
+          jetGain.connect(this.ambientGain);
+
+          turbineOsc.connect(turbineGain);
+          turbineGain.connect(this.ambientGain);
+
+          jetNoise.start(now);
+          jetNoise.stop(now + duration);
+          turbineOsc.start(now);
+          turbineOsc.stop(now + duration);
+        }
+
+        /* SFX 8: Short Victory Fanfare */
+        playVictoryFanfare() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const melody = [
+            { f: 523.25, t: 0.0, d: 0.16 },
+            { f: 659.25, t: 0.16, d: 0.16 },
+            { f: 783.99, t: 0.32, d: 0.16 },
+            { f: 1046.5, t: 0.48, d: 0.45 },
+            { f: 783.99, t: 0.78, d: 0.15 },
+            { f: 1046.5, t: 0.94, d: 0.65 }
+          ];
+          melody.forEach((n) => {
+            const osc = this.ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(n.f, now + n.t);
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.001, now + n.t);
+            g.gain.linearRampToValueAtTime(0.28, now + n.t + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(now + n.t);
+            osc.stop(now + n.t + n.d + 0.02);
+          });
+        }
+
+        /* ==================== WORD PRONUNCIATION (HIGHEST PRIORITY) ==================== */
+        stopPronunciation() {
+          if (this.currentAudioEl) {
+            try {
+              this.currentAudioEl.pause();
+              this.currentAudioEl.currentTime = 0;
+            } catch (_) {}
+            this.currentAudioEl = null;
+          }
+          if ('speechSynthesis' in window) {
+            try { window.speechSynthesis.cancel(); } catch (_) {}
+          }
+          this._setDucking(false);
+        }
+
+        /**
+         * Plays pronunciation of the Rumi word ONLY.
+         * Priority 1: Teacher Recorded/Uploaded Audio from IndexedDB
+         * Priority 2: Web Speech API strictly with ms-MY Malaysian Malay voice
+         * Returns { played: boolean, source: 'teacher'|'ms-my'|'none' }
+         */
+        playWord(wordObj, onStateChange) {
+          this.ensureContext();
+          this.stopPronunciation();
+
+          if (this.muted) {
+            if (onStateChange) onStateChange(false);
+            return { played: false, source: 'muted' };
+          }
+
+          // 1. Check Teacher Custom Audio Recording in IndexedDB
+          const customDataUrl = this.teacherDB.getRecording(wordObj.id);
+          if (customDataUrl) {
+            const audio = new Audio(customDataUrl);
+            audio.volume = this.volumes.voice;
+            this.currentAudioEl = audio;
+            this._setDucking(true);
+            if (onStateChange) onStateChange(true);
+
+            audio.onended = () => {
+              this.currentAudioEl = null;
+              this._setDucking(false);
+              if (onStateChange) onStateChange(false);
+            };
+            audio.onerror = () => {
+              this.currentAudioEl = null;
+              this._setDucking(false);
+              if (onStateChange) onStateChange(false);
+            };
+            audio.play().catch(() => {
+              this._setDucking(false);
+              if (onStateChange) onStateChange(false);
+            });
+            return { played: true, source: 'teacher' };
+          }
+
+          // 2. Check Web Speech API with strict ms-MY voice (NEVER Indonesian)
+          if ('speechSynthesis' in window && this.msVoiceAvailable && this.msVoice) {
+            const utter = new SpeechSynthesisUtterance(wordObj.rumi.toLowerCase());
+            utter.voice = this.msVoice;
+            utter.lang = this.msVoice.lang || 'ms-MY';
+            utter.rate = 0.88;
+            utter.pitch = 1.0;
+            utter.volume = this.volumes.voice;
+
+            utter.onstart = () => {
+              this._setDucking(true);
+              if (onStateChange) onStateChange(true);
+            };
+            utter.onend = () => {
+              this._setDucking(false);
+              if (onStateChange) onStateChange(false);
+            };
+            utter.onerror = () => {
+              this._setDucking(false);
+              if (onStateChange) onStateChange(false);
+            };
+
+            window.speechSynthesis.speak(utter);
+            return { played: true, source: 'ms-my' };
+          }
+
+          // 3. Honest fallback: No ms-MY voice & no teacher recording available
+          if (onStateChange) onStateChange(false);
+          return { played: false, source: 'none' };
+        }
+      }
+
+      /* =====================================================================
+         5. MAIN GAME CONTROLLER
+      ====================================================================== */
+      class JawiQuestGame {
+        constructor() {
+          this.teacherDB = new TeacherAudioDB();
+          this.audio = new AirportAudioManager(this.teacherDB);
+
+          this.playerName = 'PEGAWAI JAWI';
+          this.queue = [];
+          this.currentBag = null;
+          this.bagAttempts = new Map(); // id -> attempt count
+          this.scoredBags = new Set();  // prevents double scoring
+          this.firstTryCorrect = 0;
+          this.deliveredPepet = 0;
+          this.deliveredTaling = 0;
+          this.score = 0;
+          this.isLocked = false;
+          this.bagSelectedByTap = false;
+          this.hasShownIntroDemo = false;
+
+          // Kapten Jawi varied dialogue pools
+          this.dialogues = {
+            arrival: [
+              '“Bagasi baharu sudah tiba! Cuba baca perkataan pada label ini.”',
+              '“Perhatikan tulisan Jawi pada label bagasi ini. Apakah bunyi vokalnya?”',
+              '“Tekan ikon pembesar suara jika mahu mendengar sebutan perkataan ini!”',
+              '“Sedia, Pegawai Jawi? Tentukan sama ada ini e-pepet atau e-taling.”'
+            ],
+            correct: [
+              '“Syabas! Bagasi berjaya dihantar ke destinasi yang tepat!”',
+              '“Cemerlang, Pegawai Jawi! Pengecaman vokal yang sangat tepat!”',
+              '“Tepat sekali! Kapal terbang semakin bersedia untuk berlepas!”',
+              '“Hebat! Kamu memang pakar membaca tulisan Jawi!”'
+            ],
+            wrong: [
+              '“Jangan risau! Cuba dengar sebutan perkataan itu sekali lagi.”',
+              '“Oops! Bagasi ini belum sampai ke destinasi yang betul. Cuba lagi!”',
+              '“Jangan putus asa, Pegawai Jawi! Perhatikan bunyi e dalam perkataan ini.”',
+              '“Hampir tepat! Bandingkan bunyi e-pepet (emak) dan e-taling (enak).”'
+            ]
+          };
+
+          this.activeRecorder = null;
+          this.recordingWordId = null;
+
+          this._bindEvents();
+        }
+
+        async init() {
+          await this.teacherDB.init();
+          this.audio._updateVoiceStatusUI();
+          this.renderTeacherTable();
+        }
+
+        _shuffle(array) {
+          const arr = [...array];
+          for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr;
+        }
+
+        _pickRandom(list) {
+          return list[Math.floor(Math.random() * list.length)];
+        }
+
+        _showScreen(screenId) {
+          document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+          document.getElementById(screenId).classList.add('active');
+        }
+
+        _openModal(modalId) {
+          document.getElementById(modalId).classList.add('active');
+        }
+
+        _closeModal(modalId) {
+          document.getElementById(modalId).classList.remove('active');
+        }
+
+        /* ==================== GAME SESSION LIFECYCLE ==================== */
+        prepareNewMission() {
+          this.audio.ensureContext();
+          this.audio.stopAllSounds();
+          this.audio.startTerminalAmbience();
+
+          this.score = 0;
+          this.firstTryCorrect = 0;
+          this.deliveredPepet = 0;
+          this.deliveredTaling = 0;
+          this.bagAttempts.clear();
+          this.scoredBags.clear();
+          this.isLocked = false;
+          this.bagSelectedByTap = false;
+
+          // Randomize order and randomize suitcase visual style & color independently
+          const shuffledPalettes = this._shuffle([...SUITCASE_PALETTES, ...SUITCASE_PALETTES]);
+          const shuffledVariants = this._shuffle([0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]);
+
+          this.queue = this._shuffle(QUESTION_BANK).map((word, idx) => ({
+            ...word,
+            bagNumber: `BG-${String(idx + 1).padStart(2, '0')}`,
+            variant: shuffledVariants[idx],
+            palette: shuffledPalettes[idx]
+          }));
+
+          // Reset Gate Trolleys & FIDS
+          document.getElementById('gate-a-trolley-bags').innerHTML = '';
+          document.getElementById('gate-b-trolley-bags').innerHTML = '';
+          this._setFidsStatus('fids-status-a', 'MENUNGGU BAGASI', 'status-waiting');
+          this._setFidsStatus('fids-status-b', 'MENUNGGU BAGASI', 'status-waiting');
+          document.getElementById('hud-flight-status').textContent = 'STATUS: LOADING BAGGAGE';
+          document.getElementById('feedback-card').classList.remove('active');
+
+          this._updateHUD();
+          this._showScreen('game-screen');
+
+          if (!this.hasShownIntroDemo) {
+            this.hasShownIntroDemo = true;
+            this._openModal('modal-how-to');
+          } else {
+            this.spawnNextBag();
+          }
+        }
+
+        spawnNextBag() {
+          if (this.queue.length === 0) {
+            this.triggerFinaleTakeoff();
+            return;
+          }
+
+          this.isLocked = true;
+          this.bagSelectedByTap = false;
+          this.currentBag = this.queue.shift();
+
+          const suitcaseEl = document.getElementById('active-suitcase');
+          const trackEl = document.getElementById('conveyor-track');
+          const laserEl = document.getElementById('scanner-laser');
+
+          suitcaseEl.classList.remove('selected-bag', 'shake-wrong', 'dragging');
+          suitcaseEl.style.transform = 'translateX(260px) scale(0.92)';
+          suitcaseEl.style.opacity = '0';
+
+          document.getElementById('suitcase-svg-slot').innerHTML = generateSuitcaseSVG(
+            this.currentBag.variant,
+            this.currentBag.palette
+          );
+          document.getElementById('bag-id-label').textContent = this.currentBag.bagNumber;
+          document.getElementById('bag-jawi-word').textContent = this.currentBag.jawi;
+
+          // Start conveyor belt visual + synchronized motor sound
+          trackEl.classList.add('running');
+          this.audio.startBeltMotor();
+          this.audio.playSuitcaseDrop();
+
+          this._setKaptenState('wave', this._pickRandom(this.dialogues.arrival));
+
+          // Slide suitcase into scanner inspection point
+          requestAnimationFrame(() => {
+            suitcaseEl.style.transition = 'transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease';
+            suitcaseEl.style.transform = 'translateX(0px) scale(1)';
+            suitcaseEl.style.opacity = '1';
+          });
+
+          // Scanner sweep halfway
+          setTimeout(() => {
+            laserEl.classList.remove('scanning');
+            void laserEl.offsetWidth;
+            laserEl.classList.add('scanning');
+            this.audio.playScannerSweep();
+          }, 420);
+
+          // Stop belt & motor when bag reaches center station
+          setTimeout(() => {
+            trackEl.classList.remove('running');
+            this.audio.stopBeltMotor();
+            this.isLocked = false;
+            this.playCurrentBagAudio();
+          }, 820);
+        }
+
+        playCurrentBagAudio() {
+          if (!this.currentBag) return;
+          const speakBtn = document.getElementById('btn-play-word-audio');
+          const warnBanner = document.getElementById('audio-warning-banner');
+
+          const result = this.audio.playWord(this.currentBag, (isSpeaking) => {
+            speakBtn.classList.toggle('speaking', isSpeaking);
+          });
+
+          if (!result.played && result.source === 'none') {
+            warnBanner.style.display = 'block';
+          } else {
+            warnBanner.style.display = 'none';
+          }
+        }
+
+        /* ==================== ANSWER EVALUATION (MASTERY LEARNING) ==================== */
+        evaluateDrop(chosenCategory) {
+          if (this.isLocked || !this.currentBag) return;
+          this.isLocked = true;
+          this.bagSelectedByTap = false;
+
+          const suitcaseEl = document.getElementById('active-suitcase');
+          suitcaseEl.classList.remove('selected-bag');
+          const bag = this.currentBag;
+          const prevAttempts = this.bagAttempts.get(bag.id) || 0;
+
+          if (chosenCategory === bag.category) {
+            // CORRECT ANSWER
+            this.audio.playGateDeliverySuccess();
+
+            // Calculate points (only once per bag)
+            let earned = 0;
+            if (!this.scoredBags.has(bag.id)) {
+              this.scoredBags.add(bag.id);
+              if (prevAttempts === 0) {
+                earned = 10;
+                this.firstTryCorrect += 1;
+              } else {
+                earned = 5;
+              }
+              this.score += earned;
+            }
+
+            if (bag.category === 'e-pepet') {
+              this.deliveredPepet += 1;
+              this._addMiniBagToTrolley('gate-a-trolley-bags', this.deliveredPepet, bag.palette.body);
+              const gateA = document.getElementById('gate-a-zone');
+              gateA.classList.add('gate-success-flash');
+              setTimeout(() => gateA.classList.remove('gate-success-flash'), 750);
+              if (this.deliveredPepet >= 6) {
+                this._setFidsStatus('fids-status-a', 'SEDIA UNTUK BERLEPAS', 'status-ready');
+              }
+            } else {
+              this.deliveredTaling += 1;
+              this._addMiniBagToTrolley('gate-b-trolley-bags', this.deliveredTaling, bag.palette.body);
+              const gateB = document.getElementById('gate-b-zone');
+              gateB.classList.add('gate-success-flash');
+              setTimeout(() => gateB.classList.remove('gate-success-flash'), 750);
+              if (this.deliveredTaling >= 6) {
+                this._setFidsStatus('fids-status-b', 'SEDIA UNTUK BERLEPAS', 'status-ready');
+              }
+            }
+
+            // Animate suitcase flying into the chosen gate
+            const targetX = bag.category === 'e-pepet' ? -330 : 330;
+            suitcaseEl.style.transition = 'transform 0.45s ease-in, opacity 0.4s ease';
+            suitcaseEl.style.transform = `translate(${targetX}px, 25px) scale(0.35)`;
+            suitcaseEl.style.opacity = '0';
+
+            if (earned > 0) {
+              this._spawnFloatingPoints(`+${earned}`);
+            }
+
+            this._updateHUD();
+            this._setKaptenState(
+              bag.category === 'e-pepet' ? 'point-left' : 'thumbsup',
+              this._pickRandom(this.dialogues.correct)
+            );
+
+            // Show Pedagogical Feedback Card
+            setTimeout(() => {
+              document.getElementById('fb-jawi-word').textContent = bag.jawi;
+              document.getElementById('fb-rumi-word').textContent = bag.rumi;
+              const catBadge = document.getElementById('fb-badge-cat');
+              catBadge.textContent = bag.category === 'e-pepet' ? 'GATE A: E-PEPET' : 'GATE B: E-TALING';
+              catBadge.style.background = bag.category === 'e-pepet' ? '#047857' : '#0369a1';
+              document.getElementById('fb-explanation').textContent = bag.explanation;
+              document.getElementById('feedback-card').classList.add('active');
+            }, 340);
+          } else {
+            // INCORRECT ANSWER -> Gentle bounce back & re-queue for mastery
+            this.bagAttempts.set(bag.id, prevAttempts + 1);
+            this.audio.playGentleRetry();
+
+            suitcaseEl.style.transition = 'transform 0.25s ease';
+            suitcaseEl.style.transform = 'translate(0px, 0px) scale(1)';
+            suitcaseEl.classList.add('shake-wrong');
+
+            this._setKaptenState('think', this._pickRandom(this.dialogues.wrong));
+
+            // Re-insert bag into queue (1-2 slots later) so pupil masters all 12 words
+            const reinsertIdx = Math.min(this.queue.length, 1 + Math.floor(Math.random() * 2));
+            this.queue.splice(reinsertIdx, 0, bag);
+
+            setTimeout(() => {
+              suitcaseEl.classList.remove('shake-wrong');
+              // Bring next bag in queue onto conveyor
+              this.spawnNextBag();
+            }, 950);
+          }
+        }
+
+        _addMiniBagToTrolley(groupId, count, color) {
+          const g = document.getElementById(groupId);
+          if (!g) return;
+          const idx = count - 1;
+          const col = idx % 3;
+          const row = Math.floor(idx / 3);
+          const x = 24 + col * 32;
+          const y = 24 - row * 17;
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x);
+          rect.setAttribute('y', y);
+          rect.setAttribute('width', '28');
+          rect.setAttribute('height', '15');
+          rect.setAttribute('rx', '3');
+          rect.setAttribute('fill', color);
+          rect.setAttribute('stroke', '#0f2544');
+          rect.setAttribute('stroke-width', '1.8');
+          g.appendChild(rect);
+        }
+
+        _spawnFloatingPoints(text) {
+          const el = document.createElement('div');
+          el.className = 'floating-points';
+          el.textContent = text;
+          el.style.left = '50%';
+          el.style.top = '48%';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 1150);
+        }
+
+        _setKaptenState(state, speech) {
+          const box = document.getElementById('kapten-jawi-box');
+          box.className = 'kapten-svg-container';
+          if (state === 'wave') box.classList.add('anim-wave');
+          if (state === 'nod') box.classList.add('anim-nod');
+          if (state === 'thumbsup') box.classList.add('anim-thumbsup');
+          if (state === 'think') box.classList.add('anim-think');
+          if (state === 'point-left') box.classList.add('anim-point-left', 'anim-thumbsup');
+
+          if (speech) {
+            document.getElementById('kapten-speech-text').textContent = speech;
+          }
+        }
+
+        _setFidsStatus(elId, text, statusClass) {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          el.textContent = text;
+          el.className = `fids-status ${statusClass}`;
+        }
+
+        _updateHUD() {
+          const delivered = this.deliveredPepet + this.deliveredTaling;
+          const total = QUESTION_BANK.length;
+          const remaining = total - delivered;
+          const pct = Math.round((delivered / total) * 100);
+
+          document.getElementById('hud-player-name').textContent = this.playerName;
+          document.getElementById('hud-delivered').textContent = delivered;
+          document.getElementById('hud-total').textContent = total;
+          document.getElementById('hud-remaining').textContent = remaining;
+          document.getElementById('hud-score').textContent = this.score;
+          document.getElementById('hud-progress-fill').style.width = `${pct}%`;
+
+          document.getElementById('count-gate-a').textContent = this.deliveredPepet;
+          document.getElementById('count-gate-b').textContent = this.deliveredTaling;
+        }
+
+        /* ==================== 4-ACT AIRCRAFT TAKEOFF FINALE ==================== */
+        triggerFinaleTakeoff() {
+          this.audio.stopBeltMotor();
+          this._setFidsStatus('fids-status-a', 'PELEPASAN BERJAYA', 'status-departed');
+          this._setFidsStatus('fids-status-b', 'PELEPASAN BERJAYA', 'status-departed');
+          document.getElementById('hud-flight-status').textContent = 'STATUS: CLEARED FOR TAKEOFF';
+
+          this._showScreen('finale-screen');
+          const takeoffBox = document.getElementById('takeoff-scene-box');
+          const finalWrap = document.getElementById('final-bp-wrap');
+          const banner = document.getElementById('takeoff-stage-banner');
+          const p1 = document.getElementById('plane-jq101');
+          const p2 = document.getElementById('plane-jq102');
+
+          takeoffBox.style.display = 'block';
+          finalWrap.classList.remove('active');
+          p1.className = '';
+          p2.className = '';
+
+          // BABAK 1: Persediaan Pelepasan (Cargo Door Close + Airport PA Chime)
+          banner.textContent = 'BABAK 1: PINTU KARGO DITUTUP — READY FOR TAKEOFF';
+          this.audio.playCargoDoorClose();
+          setTimeout(() => this.audio.playAirportPAChime(), 600);
+
+          // BABAK 2: Pesawat Bergerak ke Landasan + Jet Engine Spool-up
+          setTimeout(() => {
+            banner.textContent = 'BABAK 2: PESAWAT BERGERAK MENUJU LANDASAN...';
+            this.audio.playJetEngineSequence();
+            p1.classList.add('taxi');
+            p2.classList.add('taxi');
+          }, 1650);
+
+          // BABAK 3: Pesawat Berlepas ke Langit
+          setTimeout(() => {
+            banner.textContent = 'BABAK 3: PELEPASAN BERJAYA! KEDUA-DUA PESAWAT BERLEPAS!';
+            p1.classList.add('liftoff');
+            p2.classList.add('liftoff');
+          }, 3700);
+
+          // BABAK 4: Kejayaan Misi + Konfeti + Digital Boarding Pass
+          setTimeout(() => {
+            takeoffBox.style.display = 'none';
+            this._populateFinalBoardingPass();
+            finalWrap.classList.add('active');
+            this.audio.playVictoryFanfare();
+            this._launchConfetti();
+          }, 6300);
+        }
+
+        _populateFinalBoardingPass() {
+          const total = QUESTION_BANK.length;
+          const maxScore = total * 10;
+          const scorePct = Math.round((this.score / maxScore) * 100);
+          const firstTryPct = Math.round((this.firstTryCorrect / total) * 100);
+
+          document.getElementById('bp-final-name').textContent = this.playerName;
+          document.getElementById('bp-final-score').textContent = `${this.score}/${maxScore} (${scorePct}%)`;
+          document.getElementById('bp-final-first-try').textContent = `${this.firstTryCorrect}/${total} (${firstTryPct}%)`;
+          document.getElementById('bp-final-pepet').textContent = `${this.deliveredPepet} / 6`;
+          document.getElementById('bp-final-taling').textContent = `${this.deliveredTaling} / 6`;
+          document.getElementById('bp-final-total').textContent = `${total} / ${total}`;
+        }
+
+        /* Save Boarding Pass as High-Res PNG Image via HTML5 Canvas */
+        downloadBoardingPassImage() {
+          const canvas = document.createElement('canvas');
+          canvas.width = 1200;
+          canvas.height = 620;
+          const ctx = canvas.getContext('2d');
+
+          const total = QUESTION_BANK.length;
+          const maxScore = total * 10;
+          const scorePct = Math.round((this.score / maxScore) * 100);
+          const firstTryPct = Math.round((this.firstTryCorrect / total) * 100);
+
+          // Background Card
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 1200, 620);
+
+          // Outer Border
+          ctx.strokeStyle = '#0f2544';
+          ctx.lineWidth = 10;
+          ctx.strokeRect(5, 5, 1190, 610);
+
+          // Left Header (Navy)
+          ctx.fillStyle = '#0f2544';
+          ctx.fillRect(10, 10, 810, 88);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(10, 94, 810, 8);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 28px sans-serif';
+          ctx.fillText('JAWIQUEST AIRLINES • BOARDING PASS', 38, 62);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '800 22px monospace';
+          ctx.fillText('FLIGHT: JQ202', 630, 62);
+
+          // Right Stub Background (Mustard)
+          ctx.fillStyle = '#fef3c7';
+          ctx.fillRect(820, 10, 370, 600);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(820, 10, 370, 88);
+          ctx.fillStyle = '#0f2544';
+          ctx.fillRect(820, 94, 370, 8);
+
+          ctx.fillStyle = '#0f2544';
+          ctx.font = '800 22px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('SIJIL PENGHARGAAN', 1005, 62);
+          ctx.textAlign = 'left';
+
+          // Perforated Divider Line
+          ctx.save();
+          ctx.setLineDash([12, 10]);
+          ctx.strokeStyle = '#0f2544';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(820, 10);
+          ctx.lineTo(820, 610);
+          ctx.stroke();
+          ctx.restore();
+
+          // Route Box
+          ctx.fillStyle = '#f8fafc';
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 3;
+          ctx.fillRect(38, 128, 750, 110);
+          ctx.strokeRect(38, 128, 750, 110);
+
+          ctx.fillStyle = '#0f2544';
+          ctx.font = '800 40px monospace';
+          ctx.fillText('JQIA', 64, 184);
+          ctx.font = '600 18px sans-serif';
+          ctx.fillStyle = '#475569';
+          ctx.fillText('JawiQuest International Airport', 64, 214);
+
+          ctx.fillStyle = '#0284c7';
+          ctx.font = '800 20px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('✈ MISI VOKAL JAWI ✈', 415, 185);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#0f2544';
+          ctx.font = '800 40px monospace';
+          ctx.fillText('DVJ-02', 762, 184);
+          ctx.font = '600 18px sans-serif';
+          ctx.fillStyle = '#475569';
+          ctx.fillText('Dunia Vokal Jawi', 762, 214);
+          ctx.textAlign = 'left';
+
+          // Metrics Grid
+          const fields = [
+            { label: 'NAMA PEGAWAI BAGASI', val: this.playerName, x: 38, y: 266 },
+            { label: 'MARKAH KESELURUHAN', val: `${this.score}/${maxScore} (${scorePct}%)`, x: 425, y: 266 },
+            { label: 'PERCUBAAN PERTAMA', val: `${this.firstTryCorrect}/${total} (${firstTryPct}%)`, x: 38, y: 374 },
+            { label: 'BAGASI E-PEPET (GATE A)', val: `${this.deliveredPepet} / 6 Bagasi`, x: 425, y: 374 },
+            { label: 'BAGASI E-TALING (GATE B)', val: `${this.deliveredTaling} / 6 Bagasi`, x: 38, y: 482 },
+            { label: 'JUMLAH BAGASI DIHANTAR', val: `${total} / ${total} Selesai`, x: 425, y: 482 }
+          ];
+
+          fields.forEach((f) => {
+            ctx.fillStyle = '#f8fafc';
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.fillRect(f.x, f.y, 362, 88);
+            ctx.strokeRect(f.x, f.y, 362, 88);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '800 15px sans-serif';
+            ctx.fillText(f.label, f.x + 16, f.y + 30);
+
+            ctx.fillStyle = '#0f2544';
+            ctx.font = '800 24px monospace';
+            ctx.fillText(f.val, f.x + 16, f.y + 66);
+          });
+
+          // Right Stub Content
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#0f2544';
+          ctx.fillRect(855, 220, 300, 68);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '800 17px sans-serif';
+          ctx.fillText('PEGAWAI BAGASI JAWI', 1005, 250);
+          ctx.fillText('BERTAULIAH', 1005, 274);
+
+          ctx.fillStyle = '#10b981';
+          ctx.fillRect(875, 314, 260, 44);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 18px monospace';
+          ctx.fillText('CLEARED FOR TAKEOFF', 1005, 342);
+
+          ctx.strokeStyle = '#047857';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(875, 384, 260, 44);
+          ctx.fillStyle = '#047857';
+          ctx.font = '800 18px monospace';
+          ctx.fillText('MISSION COMPLETED', 1005, 412);
+
+          // Barcode on Stub
+          ctx.fillStyle = '#0f2544';
+          for (let bx = 875; bx < 1130; bx += 8) {
+            const w = (bx % 16 === 0) ? 5 : 2;
+            ctx.fillRect(bx, 465, w, 65);
+          }
+          ctx.font = '700 14px monospace';
+          ctx.fillText('JQ202-2026-VOKAL-JAWI', 1005, 552);
+
+          // Trigger Download
+          const link = document.createElement('a');
+          const safeName = this.playerName.replace(/[^a-zA-Z0-9_-]/g, '_');
+          link.download = `BoardingPass_JawiQuest_${safeName}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
+
+        _launchConfetti() {
+          const canvas = document.getElementById('confetti-canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+
+          const colors = ['#fbbf24', '#10b981', '#38bdf8', '#ef4444', '#a855f7', '#ffffff'];
+          const pieces = Array.from({ length: 130 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            w: 8 + Math.random() * 8,
+            h: 6 + Math.random() * 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vy: 2.5 + Math.random() * 4,
+            vx: (Math.random() - 0.5) * 2.5,
+            rot: Math.random() * 360,
+            vrot: (Math.random() - 0.5) * 8
+          }));
+
+          let frame = 0;
+          const render = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach((p) => {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vrot;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate((p.rot * Math.PI) / 180);
+              ctx.fillStyle = p.color;
+              ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              ctx.restore();
+            });
+            frame += 1;
+            if (frame < 240) {
+              requestAnimationFrame(render);
+            } else {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+          };
+          render();
+        }
+
+        /* ==================== TEACHER AUDIO STUDIO TABLE & RECORDER ==================== */
+        renderTeacherTable() {
+          const tbody = document.getElementById('teacher-word-tbody');
+          if (!tbody) return;
+          tbody.innerHTML = '';
+
+          QUESTION_BANK.forEach((w) => {
+            const hasRec = Boolean(this.teacherDB.getRecording(w.id));
+            const srcText = hasRec
+              ? '<span style="color:#047857; font-weight:800;">✅ Rakaman Guru</span>'
+              : this.audio.msVoiceAvailable
+              ? '<span style="color:#0369a1; font-weight:700;">🔊 Suara ms-MY</span>'
+              : '<span style="color:#b45309; font-weight:700;">⚠️ Tiada Rakaman</span>';
+
+            const isRecThis = this.recordingWordId === w.id;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><strong>${w.category === 'e-pepet' ? 'E-Pepet' : 'E-Taling'}</strong></td>
+              <td class="t-jawi" dir="rtl">${w.jawi}</td>
+              <td><strong>${w.rumi}</strong></td>
+              <td>${srcText}</td>
+              <td>
+                <button type="button" class="mini-btn" data-action="test" data-id="${w.id}">▶ Dengar</button>
+                <button type="button" class="mini-btn ${isRecThis ? 'rec-active' : ''}" data-action="record" data-id="${w.id}">
+                  ${isRecThis ? '⏹ Berhenti' : '🎙️ Rakam'}
+                </button>
+                <label class="mini-btn" style="display:inline-block;">
+                  📁 Muat Naik
+                  <input type="file" accept="audio/*" data-action="upload" data-id="${w.id}" style="display:none;" />
+                </label>
+                ${hasRec ? `<button type="button" class="mini-btn" data-action="delete" data-id="${w.id}">🗑️</button>` : ''}
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        async toggleMicRecord(wordId) {
+          if (this.activeRecorder && this.recordingWordId === wordId) {
+            this.activeRecorder.stop();
+            return;
+          }
+          if (this.activeRecorder) {
+            this.activeRecorder.stop();
+          }
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Pelayar ini tidak menyokong rakaman mikrofon terus. Sila gunakan butang "Muat Naik" untuk memilih fail audio MP3 atau WAV.');
+            return;
+          }
+
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const chunks = [];
+            const recorder = new MediaRecorder(stream);
+            this.activeRecorder = recorder;
+            this.recordingWordId = wordId;
+            this.renderTeacherTable();
+
+            recorder.ondataavailable = (e) => {
+              if (e.data && e.data.size > 0) chunks.push(e.data);
+            };
+
+            recorder.onstop = () => {
+              stream.getTracks().forEach((t) => t.stop());
+              const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+              const reader = new FileReader();
+              reader.onloadend = async () => {
+                await this.teacherDB.saveRecording(wordId, reader.result);
+                this.activeRecorder = null;
+                this.recordingWordId = null;
+                this.renderTeacherTable();
+              };
+              reader.readAsDataURL(blob);
+            };
+
+            recorder.start();
+          } catch (err) {
+            alert('Kebenaran mikrofon tidak diberikan atau mikrofon tidak ditemui. Anda masih boleh memuat naik fail MP3/WAV.');
+            this.activeRecorder = null;
+            this.recordingWordId = null;
+            this.renderTeacherTable();
+          }
+        }
+
+        /* ==================== EVENT BINDINGS (DRAG & DROP + TAP + UI) ==================== */
+        _bindEvents() {
+          // Modal Close Buttons
+          document.querySelectorAll('[data-close-modal]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              this._closeModal(btn.getAttribute('data-close-modal'));
+            });
+          });
+
+          // Start Screen Buttons
+          document.getElementById('btn-start-mission').addEventListener('click', () => {
+            this.audio.ensureContext();
+            this._openModal('modal-officer-id');
+            document.getElementById('input-player-name').focus();
+          });
+
+          document.getElementById('btn-how-to-play').addEventListener('click', () => {
+            this.audio.ensureContext();
+            this._openModal('modal-how-to');
+          });
+
+          document.getElementById('btn-open-teacher-start').addEventListener('click', () => {
+            this.audio.ensureContext();
+            this.renderTeacherTable();
+            this._openModal('modal-teacher-audio');
+          });
+
+          // Live preview of Officer ID Name
+          document.getElementById('input-player-name').addEventListener('input', (e) => {
+            const val = e.target.value.trim().toUpperCase();
+            document.getElementById('preview-officer-name').textContent = val || 'PEGAWAI BAGASI JAWI';
+          });
+
+          document.getElementById('btn-confirm-officer').addEventListener('click', () => {
+            const rawName = document.getElementById('input-player-name').value.trim();
+            this.playerName = (rawName || 'PEGAWAI JAWI').toUpperCase();
+            this._closeModal('modal-officer-id');
+            this.prepareNewMission();
+          });
+
+          document.getElementById('btn-close-demo-start').addEventListener('click', () => {
+            this._closeModal('modal-how-to');
+            if (document.getElementById('game-screen').classList.contains('active') && !this.currentBag) {
+              this.spawnNextBag();
+            }
+          });
+
+          // Master Mute Toggle Sync
+          const toggleMute = () => {
+            this.audio.ensureContext();
+            this.audio.setMuted(!this.audio.muted);
+            document.getElementById('mute-start-label').textContent = this.audio.muted ? 'Bunyi: Mati' : 'Bunyi: Hidup';
+            document.getElementById('hud-mute-icon').textContent = this.audio.muted ? '🔇' : '🔊';
+            document.getElementById('hud-mute-text').textContent = this.audio.muted ? 'Mati' : 'Bunyi';
+          };
+          document.getElementById('btn-mute-start').addEventListener('click', toggleMute);
+          document.getElementById('btn-hud-mute').addEventListener('click', toggleMute);
+
+          // In-Game Top HUD Controls
+          document.getElementById('btn-hud-audio-settings').addEventListener('click', () => {
+            this.renderTeacherTable();
+            this._openModal('modal-teacher-audio');
+          });
+
+          document.getElementById('btn-hud-help').addEventListener('click', () => {
+            this._openModal('modal-how-to');
+          });
+
+          document.getElementById('btn-hud-menu').addEventListener('click', () => {
+            this.audio.stopAllSounds();
+            this.currentBag = null;
+            this._showScreen('start-screen');
+          });
+
+          // Next Bag Button on Feedback Card
+          document.getElementById('btn-next-bag').addEventListener('click', () => {
+            document.getElementById('feedback-card').classList.remove('active');
+            this.spawnNextBag();
+          });
+
+          // Speaker Button inside Luggage Tag
+          const speakerBtn = document.getElementById('btn-play-word-audio');
+          speakerBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+          speakerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.playCurrentBagAudio();
+          });
+
+          // Finale Buttons
+          document.getElementById('btn-print-bp').addEventListener('click', () => window.print());
+          document.getElementById('btn-save-bp-img').addEventListener('click', () => this.downloadBoardingPassImage());
+          document.getElementById('btn-play-again').addEventListener('click', () => this.prepareNewMission());
+          document.getElementById('btn-finale-menu').addEventListener('click', () => {
+            this.audio.stopAllSounds();
+            this.currentBag = null;
+            this._showScreen('start-screen');
+          });
+
+          // Volume Sliders
+          const bindVol = (sliderId, labelId, cat) => {
+            document.getElementById(sliderId).addEventListener('input', (e) => {
+              const v = Number(e.target.value);
+              document.getElementById(labelId).textContent = `${v}%`;
+              this.audio.setCategoryVolume(cat, v / 100);
+            });
+          };
+          bindVol('vol-voice', 'vol-voice-val', 'voice');
+          bindVol('vol-ambient', 'vol-ambient-val', 'ambient');
+          bindVol('vol-sfx', 'vol-sfx-val', 'sfx');
+
+          // Teacher Table Delegation
+          document.getElementById('teacher-word-tbody').addEventListener('click', async (e) => {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            const wordObj = QUESTION_BANK.find((w) => w.id === id);
+            if (!wordObj) return;
+
+            if (action === 'test') {
+              const res = this.audio.playWord(wordObj);
+              if (!res.played && res.source === 'none') {
+                alert('Tiada suara ms-MY terbina pada pelayar ini dan tiada rakaman guru lagi bagi perkataan "' + wordObj.rumi + '". Sila tekan Rakam atau Muat Naik MP3/WAV.');
+              }
+            } else if (action === 'record') {
+              await this.toggleMicRecord(id);
+            } else if (action === 'delete') {
+              await this.teacherDB.deleteRecording(id);
+              this.renderTeacherTable();
+            }
+          });
+
+          document.getElementById('teacher-word-tbody').addEventListener('change', (e) => {
+            const input = e.target;
+            if (input.getAttribute('data-action') !== 'upload') return;
+            const id = input.getAttribute('data-id');
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+              await this.teacherDB.saveRecording(id, reader.result);
+              this.renderTeacherTable();
+            };
+            reader.readAsDataURL(file);
+          });
+
+          // Export & Import Teacher Audio Pack
+          document.getElementById('btn-export-audio-pack').addEventListener('click', () => {
+            const dataStr = this.teacherDB.exportAllJSON();
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'JawiQuest_Rakaman_Audio_Guru.json';
+            a.click();
+            URL.revokeObjectURL(url);
+          });
+
+          document.getElementById('input-import-audio-pack').addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+              try {
+                await this.teacherDB.importAllJSON(reader.result);
+                this.renderTeacherTable();
+                alert('Pek rakaman audio guru berjaya diimport!');
+              } catch (_) {
+                alert('Fail JSON tidak sah.');
+              }
+            };
+            reader.readAsText(file);
+          });
+
+          // ==================== POINTER DRAG & DROP + TAP-TO-SEND ====================
+          this._setupSuitcasePointerDrag();
+        }
+
+        _setupSuitcasePointerDrag() {
+          const suitcase = document.getElementById('active-suitcase');
+          const gateA = document.getElementById('gate-a-zone');
+          const gateB = document.getElementById('gate-b-zone');
+
+          let isDragging = false;
+          let movedDistance = 0;
+          let startX = 0;
+          let startY = 0;
+
+          const checkGateIntersection = (clientX, clientY) => {
+            const rectA = gateA.getBoundingClientRect();
+            const rectB = gateB.getBoundingClientRect();
+            const inA = clientX >= rectA.left && clientX <= rectA.right && clientY >= rectA.top && clientY <= rectA.bottom;
+            const inB = clientX >= rectB.left && clientX <= rectB.right && clientY >= rectB.top && clientY <= rectB.bottom;
+            gateA.classList.toggle('drag-over', inA);
+            gateB.classList.toggle('drag-over', inB);
+            if (inA) return 'e-pepet';
+            if (inB) return 'e-taling';
+            return null;
+          };
+
+          suitcase.addEventListener('pointerdown', (e) => {
+            if (this.isLocked || !this.currentBag) return;
+            if (e.target.closest('#btn-play-word-audio')) return;
+
+            isDragging = true;
+            movedDistance = 0;
+            startX = e.clientX;
+            startY = e.clientY;
+            suitcase.classList.add('dragging');
+            suitcase.setPointerCapture(e.pointerId);
+          });
+
+          window.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            movedDistance = Math.hypot(dx, dy);
+            const tilt = Math.max(-8, Math.min(8, dx * 0.03));
+            suitcase.style.transform = `translate(${dx}px, ${dy - 8}px) scale(1.06) rotate(${tilt}deg)`;
+            checkGateIntersection(e.clientX, e.clientY);
+          });
+
+          window.addEventListener('pointerup', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            suitcase.classList.remove('dragging');
+            gateA.classList.remove('drag-over');
+            gateB.classList.remove('drag-over');
+
+            // If user tapped/clicked without dragging far, toggle Tap-to-Select mode
+            if (movedDistance < 10) {
+              suitcase.style.transition = 'transform 0.2s ease';
+              suitcase.style.transform = 'translate(0px, 0px) scale(1)';
+              this.bagSelectedByTap = !this.bagSelectedByTap;
+              suitcase.classList.toggle('selected-bag', this.bagSelectedByTap);
+              if (this.bagSelectedByTap) {
+                document.getElementById('helper-hint-bar').innerHTML =
+                  'Bagasi dipilih! Sekarang klik <strong>GATE A (Pulau E-Pepet)</strong> atau <strong>GATE B (Pulau E-Taling)</strong>.';
+              }
+              return;
+            }
+
+            const droppedGate = checkGateIntersection(e.clientX, e.clientY);
+            gateA.classList.remove('drag-over');
+            gateB.classList.remove('drag-over');
+
+            if (droppedGate) {
+              this.evaluateDrop(droppedGate);
+            } else {
+              // Smoothly return suitcase to center conveyor station if dropped outside gates
+              suitcase.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+              suitcase.style.transform = 'translate(0px, 0px) scale(1)';
+            }
+          });
+
+          // Click/Tap on Gate A or Gate B (works both after selecting bag OR directly for easy accessibility)
+          gateA.addEventListener('click', () => {
+            if (!this.isLocked && this.currentBag) {
+              this.evaluateDrop('e-pepet');
+            }
+          });
+
+          gateB.addEventListener('click', () => {
+            if (!this.isLocked && this.currentBag) {
+              this.evaluateDrop('e-taling');
+            }
+          });
+        }
+      }
+
+      // Boot Application
+      window.addEventListener('DOMContentLoaded', () => {
+        const game = new JawiQuestGame();
+        game.init();
+      });
+    })();
+  </script>
+</body>
+</html>
